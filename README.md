@@ -1,9 +1,9 @@
 # Persistencia
 
 ## Alunos: 
-> Leonardo Martins de Loiola - 553762
-> Lucas Cavalcante Torres - 557156
-> Roberto Alexandre da Silva Sousa Junior - 475223
+- Leonardo Martins de Loiola - 553762
+- Lucas Cavalcante Torres - 557156
+- Roberto Alexandre da Silva Sousa Junior - 475223
 
 ## Instruções para Uso
 
