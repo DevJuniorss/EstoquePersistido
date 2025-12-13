@@ -30,119 +30,102 @@ erDiagram
 
     CLIENTE {
         string id_cliente
-        string tipo_cliente "CPF | CNPJ"
+        string nome
+        string tipo_documento "CPF | CNPJ"
+        string email
+        string telefone
+        string endereco
+        string nascimento
+    }
+
+    FORNECEDOR {
+        string id_fornecedor
+        string nome
+        string tipo_documento "CPF | CNPJ"
         string email
         string telefone
         string endereco
     }
 
-    VENDA {
-        string id_venda
-        date data_venda
-    }
-
     PEDIDO {
         string id_pedido
-        int quantidade_itens
-        float valor_total
-    }
-
-    ITEM_PEDIDO {
-        string id_item
-        int quantidade
-        float valor_unitario
-    }
-
-    PRODUTO {
-        string id_produto
-        date data_validade
-        date data_entrada_estoque
-        date data_alerta_vencimento
-        date data_venda
+        id_lista_produtos produtos
+        date data_pedido
+        string tipo_movimentacao "ENTRADA | SAIDA"
     }
 
     PAGAMENTO {
         string id_pagamento
         date data_pagamento
-        string tipo_pagamento "À vista | Parcelado"
-        int numero_parcelas
-        string forma_recebimento "Dinheiro | Cartão | Pix"
+        string tipo_pagamento "A_VISTA | A_PRAZO"
+        string meio_pagamento "DINHEIRO | PIX | CARTAO | PROMISSORIA"
     }
 
-    FORNECEDOR {
-        string id_fornecedor
-        string tipo_documento "CPF | CNPJ"
-        string telefone
-        string endereco
-        string email
-    }
-
-    COMPRA {
-        string id_compra
-        date data_compra
-        float valor_total
-    }
-
-    ITEM_COMPRA {
-        string id_item_compra
+    ESTOQUE {
+        string id_produto
+        string nome_produto
+        string marca
         int quantidade
-        float valor_unitario
+        float preco_unitario
+        date data_movimentacao "ENTRADA | SAIDA"
+        date data_validade
+        string descricao
     }
 
-    %% RELACIONAMENTOS — SAÍDA (VENDA)
-    CLIENTE ||--o{ VENDA : realiza
-    VENDA ||--o{ PEDIDO : possui
-    PEDIDO ||--o{ ITEM_PEDIDO : contem
-    ITEM_PEDIDO }o--|| PRODUTO : refere_se
-    VENDA ||--|| PAGAMENTO : paga_por
+    LISTA_PRODUTOS {
+        string id_lista_produtos
+        string nome_produto
+        string marca
+        int quantidade
+        float preco_unitario
+        date data_movimentacao
+        string descricao
+    }
 
-    %% RELACIONAMENTOS — ENTRADA (COMPRA / ESTOQUE)
-    FORNECEDOR ||--o{ COMPRA : realiza
-    COMPRA ||--o{ ITEM_COMPRA : contem
-    ITEM_COMPRA }o--|| PRODUTO : abastece
+    %% RELACIONAMENTOS
+    CLIENTE ||--o{ PEDIDO : realiza
+    FORNECEDOR ||--o{ PEDIDO : atende
+
+    PEDIDO ||--|| PAGAMENTO : possui
+
+    PEDIDO ||--o{ LISTA_PRODUTOS : contem
+    ESTOQUE ||--o{ LISTA_PRODUTOS : registra
 ```
 
 # Querys
 ## Clientes
-- CONSULTAR_CLIENTES
-- CONSULTAR_CLIENTE_POR_ID
-- CONSULTAR_CLIENTES_POR_TIPO
+- Consultar_Cliente_Nome
+- Consultar_Cliente_ID
+- Consultar_Cliente_Doc
+- Consultar_Cliente_Por_Numero_Pedido
+- Consultar_Cliente_Por_Endereco
 
-## Produtos
-- CONSULTAR_PRODUTOS
-- CONSULTAR_PRODUTO_POR_ID
-- CONSULTAR_PRODUTOS_COM_ESTOQUE_BAIXO
-- CONSULTAR_PRODUTOS_PROXIMOS_DO_VENCIMENTO 
 
 ## Fornecedores
-- CONSULTAR_FORNECEDORES
-- CONSULTAR_FORNECEDOR_POR_ID
-
-## Vendas
-- CONSULTAR_VENDAS
-- CONSULTAR_VENDAS_POR_PERIODO
-- CONSULTAR_VENDAS_POR_CLIENTE
-- CONSULTAR_VENDAS_POR_FORMA_PAGAMENTO
+- Consultar_Fornecedor_Por_ID
+- Consultar_Fornecedor_Por_Nome
+- Consultar_Fornecedor_Por_Doc
+- Consultar_Fornecedor_Por_Endereco
+- Consultar_Fornecedor_Por_Pedido
 
 ## Pedidos
-- CONSULTAR_PEDIDOS
-- CONSULTAR_PEDIDOS_POR_VENDA
-
-## Itens em Pedido
-- CONSULTAR_ITENS_PEDIDO_POR_PEDIDO
+- Consultuar_Pedido_Endereco_Entrega
+- Consutlar_Pedido_ID
+- Consultar_Pedido_Data
+- Consultar_Pedido_Meio_Pagamento
 
 ## Pagamentos
-- CONSULTAR_PAGAMENTOS
-- CONSULTAR_PAGAMENTOS_PARCELADOS
-- CONSULTAR_PAGAMENTOS_A_VISTA
-
-## Compras
-- CONSULTAR_COMPRAS
-- CONSULTAR_COMPRAS_POR_FORNECEDOR
-- CONSULTAR_COMPRAS_POR_PERIODO
-
-## Itens em Compra
-- CONSULTAR_ITENS_COMPRA_POR_COMPRA
+- Consultar_Pagamento_Data
+- Consultar_Pagamento_Cliente
+- Consultar_Pagamento_Fornecedor
+- Consultar_Pagamento_Por_Pedido
 
 ## Estoque
-- CONSULTAR_MOVIMENTACAO_ESTOQUE
+- Consultar_Data_Validade_Proxima
+- Consultar_Baixa_Quantidade_Produto(trigger para alerta)
+- Consultar_Produto_Por_Nome
+- Consultar_Produto_Por_ID
+- Consutlar_Produto_Por_Fornecedor
+- Consutlar_Produto_Por_Marca
+- Consutlar_Produto_Por_Descricao
+
