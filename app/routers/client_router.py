@@ -1,5 +1,4 @@
 from fastapi import APIRouter
-from sqlmodel import SQLModel, Field
 from app.services.client_service import *
 from app.models.client import Client
 
@@ -8,6 +7,10 @@ client_router = APIRouter(prefix = '/clients')
 @client_router.get('/')
 async def get_clients():
     return await list_clients()
+
+@client_router.get('/{client_id}')
+async def get_client(client_id: int):
+    return await get_client_by_id_service(client_id)
 
 @client_router.post('/')
 async def create_client(client: Client):

@@ -1,12 +1,16 @@
 from app.db.database import get_session
-from fastapi import Depends
-from sqlmodel import Session, select
+from sqlmodel import select
 from app.models.client import Client
 
 
 async def get_all_clients():
     with get_session() as session:
         return session.exec(select(Client)).all()
+    
+async def get_client_crud(client_id: int):
+    with get_session() as session:
+        client = session.get(Client, client_id)
+        return client
 
 async def create_client_crud(client: Client):
     with get_session() as session:
