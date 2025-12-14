@@ -7,6 +7,10 @@ from sqlmodel import SQLModel
 from app.db.database import engine
 
 from app.models.client import Client
+from app.models.order import Order
+from app.models.payment import Payment
+from app.models.product import Product
+from app.models.product_order import ProductOrder
 
 load_dotenv()
 
