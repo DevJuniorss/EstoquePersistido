@@ -1,11 +1,21 @@
 from app.db.database import get_session
-from sqlmodel import select
+from sqlmodel import func, select
 from app.models.client import Client
 
 
-async def get_all_clients():
+async def get_all_clients(size: int, offset: int):
     with get_session() as session:
-        return session.exec(select(Client)).all()
+        total = session.exec(
+            select(func.count()).select_from(Client)
+        ).one()
+
+        clients = session.exec(
+            select(Client)
+            .limit(size)
+            .offset(offset)
+        ).all()
+
+    return clients, total
     
 async def get_client_crud(client_id: int):
     with get_session() as session:

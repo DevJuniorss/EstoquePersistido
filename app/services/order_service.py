@@ -6,11 +6,10 @@ from app.crud.product_crud import get_product_crud
 
 async def get_order_service(order_id: int):
     order = await get_order_crud(order_id)
-    print('service', order.client)
     data = order.model_dump()
     data['client'] = order.client
     data['payment'] = order.payment
-    data['product_orders'] = [i.product for i in order.product_orders]
+    data['product_orders'] = [{"product": i.product, "quantity": i.quantity} for i in order.product_orders]
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
     return {"message": "Order found", "data": data}
@@ -37,3 +36,15 @@ async def create_order_service(order_data: OrderCreate):
             )
 
     return await create_order_crud(order_data)
+
+async def delete_order_service(order_id: int):
+    deleted_order = await delete_order_crud(order_id)
+    if not deleted_order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    return {"message": "Order deleted successfully"}
+
+async def update_order_service(order_id: int, order_data: OrderCreate):
+    updated_order = await update_order_crud(order_id, order_data)
+    if not updated_order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    return {"message": "Order updated successfully", "data": updated_order}

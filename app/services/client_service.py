@@ -2,9 +2,16 @@ from fastapi import HTTPException, status
 from app.crud.client_crud import *
 from app.models.client import Client
 
-async def list_clients():
-    clients = await get_all_clients()
-    return {"message": "List of clients", "data": clients}
+async def list_clients(size: int, offset: int):
+    clients, total = await get_all_clients(size, offset)
+    return {
+        "message": "List of clients",
+        "data": clients,
+        "size": size,
+        "offset": offset,
+        "total": total
+    }
+
 
 async def get_client_by_id_service(client_id: int):
     try:

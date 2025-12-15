@@ -7,7 +7,6 @@ from app.models.payment import Payment
 from app.models.product_order import ProductOrder
 from app.models.order_create import OrderCreate
 from sqlalchemy.orm import selectinload
-from app.schemas.read_order_schema import OrderRead
 
 
 
@@ -51,6 +50,27 @@ async def create_order_crud(order_data: OrderCreate):
                 )
             session.add(product_order)
 
+        session.commit()
+        session.refresh(order)
+        return order
+    
+async def delete_order_crud(order_id: int):
+    with get_session() as session:
+        order = session.get(Order, order_id)
+        if not order:
+            return None
+        session.delete(order)
+        session.commit()
+        return order
+    
+async def update_order_crud(order_id: int, order_data: OrderCreate):
+    with get_session() as session:
+        order = session.get(Order, order_id)
+        if not order:
+            return None
+        for key, value in order_data.model_dump(exclude_unset=True, exclude={"items"}).items():
+            setattr(order, key, value)
+        session.add(order)
         session.commit()
         session.refresh(order)
         return order

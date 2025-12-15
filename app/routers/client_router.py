@@ -1,12 +1,14 @@
 from fastapi import APIRouter
+from fastapi.params import Query
 from app.services.client_service import *
 from app.models.client import Client
 
 client_router = APIRouter(prefix = '/clients')
 
 @client_router.get('/')
-async def get_clients():
-    return await list_clients()
+async def get_clients(size: int = Query(10, ge=1, le=100),
+    offset: int = Query(0, ge=0),):
+    return await list_clients(size=size, offset=offset)
 
 @client_router.get('/{client_id}')
 async def get_client(client_id: int):

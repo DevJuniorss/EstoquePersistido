@@ -23,6 +23,6 @@ class Order(SQLModel, table=True):
     client_id: int = Field(foreign_key="client.id")
     payment_id: int = Field(foreign_key="payment.id")
 
-    product_orders: List["ProductOrder"] = Relationship(back_populates="order")
+    product_orders: List["ProductOrder"] = Relationship(back_populates="order", sa_relationship_kwargs={"cascade": "all, delete-orphan"})
     client: "Client" = Relationship(back_populates="orders")
     payment: "Payment" = Relationship(back_populates="orders")
