@@ -16,6 +16,25 @@ async def get_all_clients(size: int, offset: int):
         ).all()
 
     return clients, total
+
+async def get_clients_by_name(name: str, size: int, offset: int):
+    pattern = f"%{name}%"
+
+    with get_session() as session:
+        total = session.exec(
+            select(func.count())
+            .select_from(Client)
+            .where(Client.name.ilike(pattern))
+        ).one()
+
+        clients = session.exec(
+            select(Client)
+            .where(Client.name.ilike(pattern))
+            .limit(size)
+            .offset(offset)
+        ).all()
+
+    return clients, total
     
 async def get_client_crud(client_id: int):
     with get_session() as session:

@@ -10,6 +10,13 @@ async def get_clients(size: int = Query(10, ge=1, le=100),
     offset: int = Query(0, ge=0),):
     return await list_clients(size=size, offset=offset)
 
+@client_router.get("/search")
+async def get_client_by_name(
+    name: str = Query(..., min_length=1),
+    size: int = Query(10, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+):
+    return await search_clients_by_name(name, size, offset)
 @client_router.get('/{client_id}')
 async def get_client(client_id: int):
     return await get_client_by_id_service(client_id)

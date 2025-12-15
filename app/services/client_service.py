@@ -11,6 +11,18 @@ async def list_clients(size: int, offset: int):
         "offset": offset,
         "total": total
     }
+    
+async def search_clients_by_name(name: str, size: int, offset: int):
+    clients, total = await get_clients_by_name(name, size, offset)
+
+    return {
+        "message": f"Clients containing '{name}'",
+        "data": clients,
+        "size": size,
+        "offset": offset,
+        "total": total
+    }
+
 
 
 async def get_client_by_id_service(client_id: int):
