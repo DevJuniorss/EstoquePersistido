@@ -2,13 +2,16 @@ from sqlmodel import Relationship, SQLModel, Field
 from typing import List, Optional
 from datetime import date
 
+
 from typing import TYPE_CHECKING
+
+from app.models.product_order import ProductOrder
 
 if TYPE_CHECKING:
     from app.models.client import Client
     from app.models.payment import Payment
-    from app.models.product import Product
     from app.models.product_order import ProductOrder
+    from app.models.product import Product
 
 
 

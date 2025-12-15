@@ -1,14 +1,34 @@
 from sqlmodel import select
 from app.db.database import get_session
+from app.models import order
+from app.models.client import Client
 from app.models.order import Order
+from app.models.payment import Payment
 from app.models.product_order import ProductOrder
 from app.models.order_create import OrderCreate
+from sqlalchemy.orm import selectinload
+from app.schemas.read_order_schema import OrderRead
+
 
 
 
 
 async def get_order_crud(order_id: int):
-    pass
+    with get_session() as session:
+        
+        statement = (
+    select(Order)
+    .where(Order.id == order_id)
+    .options(
+        selectinload(Order.client),
+        selectinload(Order.payment),
+        selectinload(Order.product_orders)
+            .selectinload(ProductOrder.product),
+    )
+)
+
+    order = session.exec(statement).first()
+    return order
 
 async def create_order_crud(order_data: OrderCreate):
     with get_session() as session:

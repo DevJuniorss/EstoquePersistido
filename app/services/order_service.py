@@ -1,8 +1,19 @@
 from fastapi import HTTPException
 from app.models.order_create import OrderCreate
-from app.crud.order_crud import create_order_crud
+from app.crud.order_crud import *
 from app.crud.product_crud import get_product_crud
 
+
+async def get_order_service(order_id: int):
+    order = await get_order_crud(order_id)
+    print('service', order.client)
+    data = order.model_dump()
+    data['client'] = order.client
+    data['payment'] = order.payment
+    data['product_orders'] = [i.product for i in order.product_orders]
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    return {"message": "Order found", "data": data}
 
 async def create_order_service(order_data: OrderCreate):
     if not order_data.items:
