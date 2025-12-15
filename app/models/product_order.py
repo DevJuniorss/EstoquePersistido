@@ -16,3 +16,6 @@ class ProductOrder(SQLModel, table=True):
 
     order: "Order" = Relationship(back_populates="product_orders")
     product: "Product" = Relationship(back_populates="product_orders")
+
+
+
