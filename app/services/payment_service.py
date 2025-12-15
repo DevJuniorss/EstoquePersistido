@@ -5,9 +5,15 @@ from datetime import date
 
 
 
-async def list_payments():
-    payments = await get_all_payments()
-    return {"message": "List of payments", "data": payments}
+async def list_payments(size: int, offset: int):
+    payments, total = await get_all_payments(size, offset)
+    return {
+        "message": "List of payments",
+        "data": payments,
+        "size": size,
+        "offset": offset,
+        "total": total
+    }
 
 
 async def get_payment_by_id_service(payment_id: int):

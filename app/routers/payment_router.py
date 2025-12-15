@@ -1,12 +1,12 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 from app.services.payment_service import *
 from app.models.payment import Payment
 
 payment_router = APIRouter(prefix = '/payments')
 
 @payment_router.get('/')
-async def get_payments():
-    return await list_payments()
+async def get_payments(size: int = Query(10, ge=1, le=100), offset: int = Query(0, ge=0)):
+    return await list_payments(size=size, offset=offset)
 
 @payment_router.get('/{payment_id}')
 async def get_payment(payment_id: int):

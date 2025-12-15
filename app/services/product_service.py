@@ -3,9 +3,15 @@ from app.crud.product_crud import *
 from app.models.product import Product
 
 
-async def list_products():
-    products = await get_all_products()
-    return {"message": "List of products", "data": products}
+async def list_products(size: int, offset: int):
+    products, total = await get_all_products(size, offset)
+    return {
+        "message": "List of products",
+        "data": products,
+        "size": size,
+        "offset": offset,
+        "total": total
+    }
 
 
 async def get_product_by_id_service(product_id: int):

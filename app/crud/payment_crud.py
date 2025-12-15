@@ -1,11 +1,21 @@
 from app.db.database import get_session
-from sqlmodel import select
+from sqlmodel import func, select
 from app.models.payment import Payment
 
 
-async def get_all_payments():
+async def get_all_payments(size: int, offset: int):
     with get_session() as session:
-        return session.exec(select(Payment)).all()
+        total = session.exec(
+            select(func.count()).select_from(Payment)
+        ).one()
+
+        payments = session.exec(
+            select(Payment)
+            .limit(size)
+            .offset(offset)
+        ).all()
+
+    return payments, total
     
 async def get_payment_crud(payment_id: int):
     with get_session() as session:
