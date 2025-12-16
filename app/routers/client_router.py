@@ -35,6 +35,7 @@ async def get_orders_by_client(
     size: int = Query(10, ge=1),
     offset: int = Query(0, ge=0)
 ):
+    """Retrieve orders for a specific client with pagination."""
     return await get_orders_by_client_service(
         client_id=client_id,
         size=size,
