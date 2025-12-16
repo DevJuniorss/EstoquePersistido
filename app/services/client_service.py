@@ -52,6 +52,17 @@ async def get_orders_by_client_service(
     size: int,
     offset: int
 ):
+    """
+    Retrieves orders for a client with pagination.
+
+    Parameters:
+        client_id (int): Client ID.
+        size (int): Number of orders to return.
+        offset (int): Pagination offset.
+
+    Returns:
+        tuple: (orders, total) where orders is a list and total is the total count.
+    """
     orders, total = await get_orders_by_client_crud(
         client_id=client_id,
         size=size,
