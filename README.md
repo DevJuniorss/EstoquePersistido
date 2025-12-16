@@ -13,6 +13,7 @@ O projeto utiliza boas práticas recomendadas pela comunidade FastAPI para aplic
 Além disso, algumas funcionalidades extras foram implementadas, como:
 - Busca por nome de clientes e produtos com filtros de string.
 - Contagem de pedidos por produto.
+- Busca de pedidos por cliente.
 - Consultas com carregamento de relacionamentos usando `selectinload` para otimização.
 - Paginação em endpoints de listagem.
 - Integração com múltiplos bancos de dados (SQLite para desenvolvimento e Neon para o banco remoto).
