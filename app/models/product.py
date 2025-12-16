@@ -9,4 +9,5 @@ class Product(SQLModel, table=True):
     name: str
     unit_price: float
 
-    product_orders: List["ProductOrder"] = Relationship(back_populates="product")
+    product_orders: List["ProductOrder"] = Relationship(back_populates="product", 
+                                                        sa_relationship_kwargs={"cascade": "all, delete-orphan"})

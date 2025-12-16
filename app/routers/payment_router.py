@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Query
+from app.schemas.payment_update import PaymentUpdate
 from app.services.payment_service import *
 from app.models.payment import Payment
 
@@ -25,7 +26,7 @@ async def create_payment(payment: Payment):
 
 
 @payment_router.put('/')
-async def update_payment(payment_id: int, payment_data: Payment):
+async def update_payment(payment_id: int, payment_data: PaymentUpdate):
     """Update an existing payment by its ID."""
     updated_payment = await update_payment_service(payment_id, payment_data)
     return updated_payment

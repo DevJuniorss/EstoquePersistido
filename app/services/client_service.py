@@ -45,6 +45,44 @@ async def search_clients_by_name(name: str, size: int, offset: int):
         "offset": offset,
         "total": total
     }
+    
+    
+async def get_orders_by_client_service(
+    client_id: int,
+    size: int,
+    offset: int
+):
+    orders, total = await get_orders_by_client_crud(
+        client_id=client_id,
+        size=size,
+        offset=offset
+    )
+
+    if not orders:
+        return {
+            "message": "No orders found for this client",
+            "total": total,
+            "data": []
+        }
+
+    data = []
+    for order in orders:
+        order_data = order.model_dump()
+        order_data["payment"] = order.payment
+        order_data["product_orders"] = [
+            {
+                "product": po.product,
+                "quantity": po.quantity
+            }
+            for po in order.product_orders
+        ]
+        data.append(order_data)
+
+    return {
+        "message": "Orders found",
+        "total": total,
+        "data": data
+    }
 
 
 async def get_client_by_id_service(client_id: int):

@@ -1,7 +1,38 @@
 from fastapi import HTTPException
-from app.models.order_create import OrderCreate
+from app.schemas.order_create import OrderCreate
 from app.crud.order_crud import *
 from app.crud.product_crud import get_product_crud
+
+
+async def get_all_orders_service(size: int, offset: int):
+    """
+    Retrieves a paginated list of orders, including related client, payment, and products.
+
+    Returns:
+        dict: Orders list and total count.
+    """
+    orders, total = await get_all_orders(size, offset)
+
+    data = []
+    for order in orders:
+        order_data = order.model_dump()
+        order_data['client'] = order.client
+        order_data['payment'] = order.payment
+        order_data['product_orders'] = [
+            {
+                "product": po.product,
+                "quantity": po.quantity
+            }
+            for po in order.product_orders
+        ]
+        data.append(order_data)
+
+    return {
+        "message": "Orders found",
+        "total": total,
+        "data": data
+    }
+
 
 
 async def get_order_service(order_id: int):

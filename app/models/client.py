@@ -10,4 +10,4 @@ class Client(SQLModel, table=True):
     email: str
     address: str
     
-    orders: List['Order'] = Relationship(back_populates="client")
+    orders: List['Order'] = Relationship(back_populates="client", sa_relationship_kwargs={"cascade": "all, delete-orphan"})

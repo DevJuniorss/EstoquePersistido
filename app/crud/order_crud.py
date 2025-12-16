@@ -1,16 +1,38 @@
-from sqlmodel import select
+from sqlmodel import func, select
 from app.db.database import get_session
 from app.models import order
 from app.models.client import Client
 from app.models.order import Order
 from app.models.payment import Payment
 from app.models.product_order import ProductOrder
-from app.models.order_create import OrderCreate
+from app.schemas.order_create import OrderCreate
 from sqlalchemy.orm import selectinload
 
 
 
 
+async def get_all_orders(size: int, offset: int):
+    with get_session() as session:
+
+        total = session.exec(
+            select(func.count()).select_from(Order)
+        ).one()
+
+        statement = (
+            select(Order)
+            .options(
+                selectinload(Order.client),
+                selectinload(Order.payment),
+                selectinload(Order.product_orders)
+                    .selectinload(ProductOrder.product),
+            )
+            .limit(size)
+            .offset(offset)
+        )
+
+        orders = session.exec(statement).all()
+
+    return orders, total
 
 async def get_order_crud(order_id: int):
     with get_session() as session:

@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from fastapi.params import Query
+from app.schemas.client_update import ClientUpdate
 from app.services.client_service import *
 from app.models.client import Client
 
@@ -28,6 +29,18 @@ async def get_client(client_id: int):
     """Retrieve a client by ID."""
     return await get_client_by_id_service(client_id)
 
+@client_router.get("/orders/{client_id}")
+async def get_orders_by_client(
+    client_id: int,
+    size: int = Query(10, ge=1),
+    offset: int = Query(0, ge=0)
+):
+    return await get_orders_by_client_service(
+        client_id=client_id,
+        size=size,
+        offset=offset
+    )
+
 
 @client_router.post('/')
 async def create_client(client: Client):
@@ -37,7 +50,7 @@ async def create_client(client: Client):
 
 
 @client_router.put('/')
-async def update_client(client_id: int, client_data: Client):
+async def update_client(client_id: int, client_data: ClientUpdate):
     """Update an existing client."""
     updated_client = await update_client_service(client_id, client_data)
     return updated_client

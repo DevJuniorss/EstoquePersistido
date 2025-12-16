@@ -12,5 +12,5 @@ class Payment(SQLModel, table=True):
     payment_method: str
     payment_status: bool
     
-    orders: List["Order"] = Relationship(back_populates="payment")
+    orders: List["Order"] = Relationship(back_populates="payment", sa_relationship_kwargs={"cascade": "all, delete-orphan"})
     
