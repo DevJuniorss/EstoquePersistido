@@ -1,6 +1,7 @@
 from app.models.client import Client
 from beanie import PydanticObjectId
 from beanie.operators import RegEx
+from app.models.product import Product
 from typing import List, Tuple
 
 async def get_all_clients(size: int, offset: int) -> Tuple[List[Client], int]:
@@ -20,6 +21,12 @@ async def get_clients_by_name(name: str, size: int, offset: int) -> Tuple[List[C
     
 async def get_client_crud(client_id: PydanticObjectId) -> Client | None:
     return await Client.get(client_id)
+
+async def get_clients_paginated(skip: int = 0, limit: int = 10, order_by: str = "name") -> List[Client]:
+    """
+    Lista clientes com paginação e ordenação.
+    """
+    return await Client.find_all().sort(order_by).skip(skip).limit(limit).to_list()
 
 async def create_client_crud(client: Client) -> Client:
     await client.create()
@@ -45,3 +52,11 @@ async def delete_client_crud(client_id: PydanticObjectId) -> Client | None:
     
     await client.delete()
     return client
+
+async def search_products_by_name(name_query: str) -> List[Product]:
+    """
+    Procura produtos pelo nome usando regex case-insensitive.
+    """
+    return await Product.find(
+        {"name": {"$regex": name_query, "$options": "i"}}
+    ).to_list()

@@ -2,6 +2,7 @@ from fastapi import APIRouter
 from fastapi.params import Query
 from app.services.client_service import *
 from app.models.client import Client
+from app.crud import client_crud
 from beanie import PydanticObjectId 
 
 client_router = APIRouter(prefix='/clients', tags=["Clients"])
@@ -22,6 +23,12 @@ async def get_client_by_name(
 ):
     """Search clients by name with pagination."""
     return await search_clients_by_name(name, size, offset)
+
+async def list_clients_crud(size: int, offset: int):
+    """
+    Lista clientes com ordenação e paginação.
+    """
+    return await Client.find_all().sort("name").skip(offset).limit(size).to_list()
 
 @client_router.get('/{client_id}')
 async def get_client(client_id: str): 

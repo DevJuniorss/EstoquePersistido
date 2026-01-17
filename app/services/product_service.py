@@ -1,6 +1,7 @@
 from fastapi import HTTPException, status
 from app.crud.product_crud import *
 from app.models.product import Product
+from app.crud import product_crud
 from beanie import PydanticObjectId
 
 async def list_products(size: int, offset: int):
@@ -115,3 +116,10 @@ async def delete_product_service(product_id: str):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error deleting product: {str(e)}"
         )
+    
+async def search_products_service(name: str):
+    """
+    Serviço para mediar a busca de produtos.
+    """
+    products = await product_crud.search_products_by_name(name)
+    return {"data": products}
