@@ -1,107 +1,119 @@
-from fastapi import HTTPException
-from app.models.order_create import OrderCreate
-from app.crud.order_crud import *
-from app.crud.product_crud import get_product_crud
+from fastapi import HTTPException, status
+from beanie import PydanticObjectId
 
+from app.models.order import Order, OrderItem
+from app.models.order_create import OrderCreate # Seu schema de entrada
+from app.models.client import Client
+from app.models.product import Product
+from app.crud import order_crud
 
-async def get_order_service(order_id: int):
+async def get_order_service(order_id: str):
     """
-    Retrieves an order by its ID, including related client, payment, and products.
-
-    Parameters:
-        order_id (int): The ID of the order to retrieve.
-
-    Returns:
-        dict: Order data with client, payment, and product details.
-
-    Raises:
-        HTTPException: If the order is not found.
+    Retrieves an order by ID with all details.
     """
-    order = await get_order_crud(order_id)
+    if not PydanticObjectId.is_valid(order_id):
+        raise HTTPException(status_code=400, detail="Invalid ID format")
+
+    order = await order_crud.get_order_crud(PydanticObjectId(order_id))
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
 
-    data = order.model_dump()
-    data['client'] = order.client
-    data['payment'] = order.payment
-    data['product_orders'] = [{"product": i.product, "quantity": i.quantity} for i in order.product_orders]
-
-    return {"message": "Order found", "data": data}
-
+    return {"message": "Order found", "data": order}
 
 async def create_order_service(order_data: OrderCreate):
     """
-    Creates a new order with its associated products.
-
-    Validates that the order has at least one product,
-    that quantities are greater than zero, and that all products exist.
-
-    Parameters:
-        order_data (OrderCreate): Data required to create the order.
-
-    Returns:
-        dict: Created order data.
-
-    Raises:
-        HTTPException: If validation fails or a product is not found.
+    Creates a new order. Validates Client and Products existence before saving.
     """
-    if not order_data.items:
-        raise HTTPException(
-            status_code=400,
-            detail="Order must have at least one product"
-        )
+    if not PydanticObjectId.is_valid(order_data.client_id):
+        raise HTTPException(status_code=400, detail="Invalid Client ID")
+        
+    client = await Client.get(PydanticObjectId(order_data.client_id))
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
 
+    if not order_data.items:
+        raise HTTPException(status_code=400, detail="Order must have at least one product")
+
+    order_items = []
+    
     for item in order_data.items:
         if item.quantity <= 0:
-            raise HTTPException(
-                status_code=400,
-                detail="Quantity must be greater than zero"
-            )
+            raise HTTPException(status_code=400, detail="Quantity must be greater than zero")
 
-        product = await get_product_crud(item.product_id)
+        if not PydanticObjectId.is_valid(item.product_id):
+             raise HTTPException(status_code=400, detail=f"Invalid Product ID: {item.product_id}")
+
+        product = await Product.get(PydanticObjectId(item.product_id))
         if not product:
-            raise HTTPException(
-                status_code=404,
-                detail=f"Product {item.product_id} not found"
-            )
+            raise HTTPException(status_code=404, detail=f"Product {item.product_id} not found")
+            
+        order_items.append(OrderItem(product=product, quantity=item.quantity))
 
-    return await create_order_crud(order_data)
+    new_order = Order(
+        order_date=order_data.order_date,
+        movement_type=order_data.movement_type,
+        client=client,
+        payment_id=str(order_data.payment_id),
+        items=order_items
+    )
 
+    return await order_crud.create_order_crud(new_order)
 
-async def delete_order_service(order_id: int):
+async def delete_order_service(order_id: str):
     """
-    Deletes an order by its ID, including associated product orders.
-
-    Parameters:
-        order_id (int): ID of the order to delete.
-
-    Returns:
-        dict: Confirmation message and deleted order data.
-
-    Raises:
-        HTTPException: If the order is not found.
+    Deletes an order by ID.
     """
-    deleted_order = await delete_order_crud(order_id)
-    if not deleted_order:
+    if not PydanticObjectId.is_valid(order_id):
+        raise HTTPException(status_code=400, detail="Invalid ID format")
+
+    deleted = await order_crud.delete_order_crud(PydanticObjectId(order_id))
+    if not deleted:
         raise HTTPException(status_code=404, detail="Order not found")
+        
     return {"message": "Order deleted successfully"}
 
-
-async def update_order_service(order_id: int, order_data: OrderCreate):
-    """
-    Updates an existing order and its associated products.
-
-    Parameters:
-        order_id (int): ID of the order to update.
-        order_data (OrderCreate): Updated data for the order.
-
-    Returns:
-        dict: Confirmation message and updated order data.
-
-    Raises:
-        HTTPException: If the order is not found.
-    """
-    updated_order = await update_order_crud(order_id, order_data)
-    if not updated_order:
+async def update_order_service(order_id: str, order_data: OrderCreate):
+    if not PydanticObjectId.is_valid(order_id):
+        raise HTTPException(status_code=400, detail="Invalid Order ID format")
+    
+    order = await Order.get(PydanticObjectId(order_id), fetch_links=True)
+    
+    if not order:
         raise HTTPException(status_code=404, detail="Order not found")
-    return {"message": "Order updated successfully", "data": updated_order}
+
+    if order_data.items is not None:
+        new_order_items = []
+        
+        for item in order_data.items:
+            if item.quantity <= 0:
+                raise HTTPException(status_code=400, detail="Quantity must be greater than zero")
+
+            if not PydanticObjectId.is_valid(item.product_id):
+                 raise HTTPException(status_code=400, detail=f"Invalid Product ID: {item.product_id}")
+            product = await Product.get(PydanticObjectId(item.product_id))
+            
+            if not product:
+                raise HTTPException(status_code=404, detail=f"Product {item.product_id} not found")
+            
+            new_order_items.append(OrderItem(product=product, quantity=item.quantity))
+        
+        order.items = new_order_items
+
+
+    data_dict = order_data.model_dump(exclude={"items"}, exclude_unset=True)
+    
+    if "client_id" in data_dict:
+        cid = data_dict.pop("client_id")
+        if PydanticObjectId.is_valid(cid):
+            new_client = await Client.get(PydanticObjectId(cid))
+            if new_client:
+                order.client = new_client
+            else:
+                raise HTTPException(status_code=404, detail="Client not found")
+
+    for key, value in data_dict.items():
+        setattr(order, key, value)
+
+    await order.save()
+    
+    return {"message": "Order updated successfully", "data": order}

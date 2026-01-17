@@ -1,70 +1,47 @@
-from app.db.database import get_session
-from sqlmodel import func, select
 from app.models.client import Client
+from beanie import PydanticObjectId
+from beanie.operators import RegEx
+from typing import List, Tuple
 
-
-async def get_all_clients(size: int, offset: int):
-    with get_session() as session:
-        total = session.exec(
-            select(func.count()).select_from(Client)
-        ).one()
-
-        clients = session.exec(
-            select(Client)
-            .limit(size)
-            .offset(offset)
-        ).all()
-
+async def get_all_clients(size: int, offset: int) -> Tuple[List[Client], int]:
+    total = await Client.count()
+    
+    clients = await Client.find_all().skip(offset).limit(size).to_list()
+    
     return clients, total
 
-async def get_clients_by_name(name: str, size: int, offset: int):
-    pattern = f"%{name}%"
-
-    with get_session() as session:
-        total = session.exec(
-            select(func.count())
-            .select_from(Client)
-            .where(Client.name.ilike(pattern))
-        ).one()
-
-        clients = session.exec(
-            select(Client)
-            .where(Client.name.ilike(pattern))
-            .limit(size)
-            .offset(offset)
-        ).all()
+async def get_clients_by_name(name: str, size: int, offset: int) -> Tuple[List[Client], int]:
+    query = RegEx(Client.name, name, "i")   
+    total = await Client.find(query).count()
+    
+    clients = await Client.find(query).skip(offset).limit(size).to_list()
 
     return clients, total
     
-async def get_client_crud(client_id: int):
-    with get_session() as session:
-        client = session.get(Client, client_id)
-        return client
+async def get_client_crud(client_id: PydanticObjectId) -> Client | None:
+    return await Client.get(client_id)
 
-async def create_client_crud(client: Client):
-    with get_session() as session:
-        session.add(client)
-        session.commit()
-        session.refresh(client)
-        return client
+async def create_client_crud(client: Client) -> Client:
+    await client.create()
+    return client
     
-async def update_client_crud(client_id: int, client_data: Client):
-    with get_session() as session:
-        client = session.get(Client, client_id)
-        if not client:
-            return None
-        for key, value in client_data.model_dump(exclude_unset=True).items():
-            setattr(client, key, value)
-        session.add(client)
-        session.commit()
-        session.refresh(client)
-        return client
+async def update_client_crud(client_id: PydanticObjectId, client_data: Client) -> Client | None:
+    client = await Client.get(client_id)
+    if not client:
+        return None
+    
+    data_dict = client_data.model_dump(exclude_unset=True, exclude={"id", "revision_id"})
+    
+    for key, value in data_dict.items():
+        setattr(client, key, value)
+    
+    await client.save()
+    return client
 
-async def delete_client_crud(client_id: int):
-    with get_session() as session:
-        client = session.get(Client, client_id)
-        if not client:
-            return None
-        session.delete(client)
-        session.commit()
-        return client
+async def delete_client_crud(client_id: PydanticObjectId) -> Client | None:
+    client = await Client.get(client_id)
+    if not client:
+        return None
+    
+    await client.delete()
+    return client

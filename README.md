@@ -19,6 +19,8 @@ Além disso, algumas funcionalidades extras foram implementadas, como:
 - Migrações de banco de dados utilizando Alembic.
 - Utilização do UV como ambiente virtual e gerenciador de dependências.
 
+Link do repositório do projeto para mais detalhes: [repositorio](https://github.com/DevJuniorss/EstoquePersistido)
+
 ## Estrutura do Projeto
 O projeto está dividido em camadas seguindo o padrão recomendado:
 - `models`: Definição das entidades do banco de dados.

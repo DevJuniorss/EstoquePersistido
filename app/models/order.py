@@ -1,28 +1,37 @@
-from sqlmodel import Relationship, SQLModel, Field
 from typing import List, Optional
-from datetime import date
+from datetime import datetime
+from beanie import Document, Link, PydanticObjectId
+from pydantic import BaseModel
+
+from app.models.client import Client
+from app.models.product import Product 
 
 
-from typing import TYPE_CHECKING
+class OrderItem(BaseModel):
+    product: Link[Product]
+    quantity: int
 
-from app.models.product_order import ProductOrder
-
-if TYPE_CHECKING:
-    from app.models.client import Client
-    from app.models.payment import Payment
-    from app.models.product_order import ProductOrder
-    from app.models.product import Product
-
-
-
-class Order(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    order_date: date
+class Order(Document):
+    order_date: datetime
     movement_type: str
+    
+    client: Link[Client]
+    payment_id: str
+    
+    items: List[OrderItem]
 
-    client_id: int = Field(foreign_key="client.id")
-    payment_id: int = Field(foreign_key="payment.id")
+    class Settings:
+        name = "orders"
 
-    product_orders: List["ProductOrder"] = Relationship(back_populates="order", sa_relationship_kwargs={"cascade": "all, delete-orphan"})
-    client: "Client" = Relationship(back_populates="orders")
-    payment: "Payment" = Relationship(back_populates="orders")
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "order_date": "2026-01-17T10:00:00",
+                "movement_type": "SAIDA",
+                "client": "64f1a2b3...",
+                "payment_id": "p123",
+                "items": [
+                    {"product": "64f1a2b3...", "quantity": 2}
+                ]
+            }
+        }
