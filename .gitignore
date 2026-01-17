@@ -4,3 +4,4 @@ Persistencia/
 .gitignore
 .env
 divisao_tarefas.txt
+seed.py

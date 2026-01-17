@@ -1,6 +1,4 @@
 from fastapi import FastAPI
-from datetime import datetime
-from app.db.database import engine
 from app.routers.routers import api_router
 from contextlib import asynccontextmanager
 from app.db.database import init_db

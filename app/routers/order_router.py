@@ -1,12 +1,11 @@
 from fastapi import APIRouter
-from app.models.order_create import OrderCreate
 from app.services.order_service import *
 
 order_router = APIRouter(prefix="/orders")
 
 
 @order_router.post("/")
-async def create_order(order: OrderCreate):
+async def create_order(order: Order):
     """Create a new order."""
     return await create_order_service(order)
 
@@ -27,7 +26,7 @@ async def delete_order(order_id: int):
 
 
 @order_router.put("/{order_id}")
-async def update_order(order_id: int, order_data: OrderCreate):
+async def update_order(order_id: int, order_data: Order):
     """Update an existing order by its ID."""
     updated_order = await update_order_service(order_id, order_data)
     return updated_order

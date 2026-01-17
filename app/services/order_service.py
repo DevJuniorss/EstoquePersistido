@@ -2,7 +2,6 @@ from fastapi import HTTPException, status
 from beanie import PydanticObjectId
 
 from app.models.order import Order, OrderItem
-from app.models.order_create import OrderCreate # Seu schema de entrada
 from app.models.client import Client
 from app.models.product import Product
 from app.crud import order_crud
@@ -20,7 +19,7 @@ async def get_order_service(order_id: str):
 
     return {"message": "Order found", "data": order}
 
-async def create_order_service(order_data: OrderCreate):
+async def create_order_service(order_data: Order):
     """
     Creates a new order. Validates Client and Products existence before saving.
     """
@@ -72,7 +71,7 @@ async def delete_order_service(order_id: str):
         
     return {"message": "Order deleted successfully"}
 
-async def update_order_service(order_id: str, order_data: OrderCreate):
+async def update_order_service(order_id: str, order_data: Order):
     if not PydanticObjectId.is_valid(order_id):
         raise HTTPException(status_code=400, detail="Invalid Order ID format")
     

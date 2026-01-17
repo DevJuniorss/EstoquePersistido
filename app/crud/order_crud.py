@@ -1,3 +1,4 @@
+from datetime import datetime
 from app.models.order import Order
 from beanie import PydanticObjectId
 from typing import List, Optional
@@ -14,6 +15,24 @@ async def create_order_crud(order: Order) -> Order:
     """
     await order.create()
     return order
+
+
+async def get_orders_by_year(year: int):
+    start_date = datetime(year, 1, 1)
+    end_date = datetime(year + 1, 1, 1)
+    
+    orders = await Order.find(
+        Order.order_date >= start_date,
+        Order.order_date < end_date
+    , fetch_links=True).to_list()
+    return orders
+
+async def count_orders_by_client():
+    pipeline = [
+        {"$group": {"_id": "$client.$id", "total_orders": {"$sum": 1}}},
+    ]
+    result = await Order.aggregate(pipeline).to_list()
+    return result
 
 async def delete_order_crud(order_id: PydanticObjectId) -> Optional[Order]:
     """
