@@ -61,7 +61,7 @@ async def update_order_crud(order_id: PydanticObjectId, order_data: dict) -> Opt
     return order
 
 async def get_orders_by_year_crud(year: int):
-    """Filtros por data/ano utilizando operadores do MongoDB"""
+    """Date/year filters using MongoDB operators"""
     start_date = datetime(year, 1, 1)
     end_date = datetime(year + 1, 1, 1)
     return await Order.find(
@@ -72,7 +72,7 @@ async def get_orders_by_year_crud(year: int):
 
 
 async def get_order_stats_agg():
-    """Agregações: Quantidade de itens por pedido"""
+    """Aggregations: Item quantity per order"""
     pipeline = [
         {"$project": {"items_count": {"$size": "$items"}}},
         {"$group": {"_id": None, "avg_items": {"$avg": "$items_count"}, "total_items": {"$sum": "$items_count"}}}

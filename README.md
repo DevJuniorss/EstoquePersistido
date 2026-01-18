@@ -1,42 +1,42 @@
-# Trabalho Persistência: API com FastAPI e MongoDB
+# Persistence Project: API with FastAPI and MongoDB
 
-## Alunos
+## Students
 - Leonardo Martins de Loiola - 553762
 - Lucas Cavalcante Torres - 557156
 - Roberto Alexandre da Silva Sousa Junior - 475223
 
-## Descrição do Projeto
-Este projeto consiste em um sistema de gerenciamento de vendas e produtos, migrado de uma arquitetura relacional para **NoSQL**, utilizando **FastAPI** e **MongoDB** (via **Beanie ODM**). Ele contempla operações de CRUD completas para clientes, pedidos e produtos, além de consultas avançadas utilizando recursos nativos do MongoDB.
+## Project Description
+This project consists of a sales and product management system, migrated from a relational architecture to **NoSQL**, using **FastAPI** and **MongoDB** (via **Beanie ODM**). It includes complete CRUD operations for clients, orders, and products, as well as advanced queries using native MongoDB features.
 
-O projeto segue boas práticas de desenvolvimento assíncrono e arquitetura modular, garantindo performance e escalabilidade.
+The project follows asynchronous development best practices and modular architecture, ensuring performance and scalability.
 
-### Funcionalidades Implementadas
-- **Tecnologia NoSQL:** Persistência de dados utilizando MongoDB e Motor (driver assíncrono).
-- **ODM Beanie:** Mapeamento de objetos-documentos para validação e estruturação dos dados.
-- **Consultas Avançadas:**
-    - Busca textual por **Regex** (Case-insensitive) para clientes e produtos.
-    - **Aggregation Pipelines** para estatísticas (ex: contagem de itens por pedido, total de pedidos por cliente).
-    - Filtros temporais (consultas por ano).
-- **Relacionamentos:**
-    - Uso de **Document Links** (Referências) para relacionar Pedidos a Clientes e Produtos.
-    - Uso de **Embedded Documents** (Documentos embutidos) para Pagamentos e Itens do Pedido, otimizando a leitura.
-    - Carregamento inteligente de relações com `fetch_links=True`.
-- **Paginação:** Implementada nativamente com `skip` e `limit` do MongoDB em todos os endpoints de listagem.
-- **Gerenciamento de Dependências:** Utilização do **uv** para gestão ágil do ambiente virtual.
+### Implemented Features
+- **NoSQL Technology:** Data persistence using MongoDB and Motor (asynchronous driver).
+- **Beanie ODM:** Object-document mapping for data validation and structuring.
+- **Advanced Queries:**
+    - Text search by **Regex** (Case-insensitive) for clients and products.
+    - **Aggregation Pipelines** for statistics (e.g.: item count per order, total orders per client).
+    - Temporal filters (queries by year).
+- **Relationships:**
+    - Use of **Document Links** (References) to relate Orders to Clients and Products.
+    - Use of **Embedded Documents** for Payments and Order Items, optimizing reading.
+    - Smart loading of relationships with `fetch_links=True`.
+- **Pagination:** Natively implemented with MongoDB's `skip` and `limit` in all listing endpoints.
+- **Dependency Management:** Use of **uv** for agile virtual environment management.
 
-Link do repositório do projeto para mais detalhes: [repositorio](https://github.com/DevJuniorss/EstoquePersistido)
+Project repository link for more details: [repository](https://github.com/DevJuniorss/EstoquePersistido)
 
-## Estrutura do Projeto
-O projeto está organizado em camadas para facilitar a manutenção:
-- `models`: Definição dos Documentos (`Client`, `Product`, `Order`) e sub-documentos (`Payment`, `OrderItem`).
-- `crud`: Camada de acesso direto ao banco (queries Beanie, aggregates, filtros).
-- `services`: Regras de negócio e orquestração dos dados.
-- `routers`: Endpoints da API (Controllers).
-- `db`: Configuração da conexão com o MongoDB Atlas ou Local.
+## Project Structure
+The project is organized in layers to facilitate maintenance:
+- `models`: Definition of Documents (`Client`, `Product`, `Order`) and sub-documents (`Payment`, `OrderItem`).
+- `crud`: Direct database access layer (Beanie queries, aggregates, filters).
+- `services`: Business logic and data orchestration.
+- `routers`: API endpoints (Controllers).
+- `db`: MongoDB Atlas or Local connection configuration.
 
-## Esquema de Banco (NoSQL)
+## Database Schema (NoSQL)
 
-Neste modelo não-relaciona, utilizamos **Coleções** e **Documentos**. O diagrama abaixo ilustra como os dados estão estruturados e relacionados. Note que `Payment` e `OrderItem` vivem dentro de `Order`.
+In this non-relational model, we use **Collections** and **Documents**. The diagram below illustrates how data is structured and related. Note that `Payment` and `OrderItem` live inside `Order`.
 
 ```mermaid
 classDiagram
@@ -81,9 +81,38 @@ classDiagram
         product: Link[Product]
     }
 
-    %% RELACIONAMENTOS NOSQL
+    %% NOSQL RELATIONSHIPS
     Client "1" -- "0..*" Order : Referenced (Link)
-    Order *-- "1" Payment : Embedded (Dentro do Documento)
-    Order *-- "1..*" OrderItem : Embedded List (Dentro do Documento)
+    Order *-- "1" Payment : Embedded (Inside Document)
+    Order *-- "1..*" OrderItem : Embedded List (Inside Document)
     OrderItem ..> Product : Referenced (Link)
+```
+## Usage Instructions
+
+This project uses **Docker** to containerize the database and **[uv](https://github.com/astral-sh/uv)** for agile dependency and Python virtual environment management.
+
+### Prerequisites
+Make sure you have installed on your machine:
+- **Docker & Docker Compose**
+- **uv** (Python package manager)
+
+### Step by Step
+
+1. **Start the Database**
+   At the project root, run the command below to start containers (MongoDB and Mongo Express) in the background:
+   ```bash
+   docker compose up -d
+   ```
+2. **Install dependencies**
+    ```bash
+    uv sync
     ```
+3. **Populate Local Database**
+    ```bash
+    uv run import_json.py
+    ```
+4. **Run Application**
+    ```bash
+    uv run uvicorn app.main:app --reload
+    ```
+

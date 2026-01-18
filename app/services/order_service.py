@@ -120,11 +120,11 @@ async def update_order_service(order_id: str, order_data: Order):
 async def get_orders_report_by_year(year: int):
     orders = await order_crud.get_orders_by_year_crud(year)
     if not orders:
-        raise HTTPException(status_code=404, detail=f"Nenhum pedido encontrado em {year}")
+        raise HTTPException(status_code=404, detail=f"No orders found for {year}")
     return {"year": year, "total": len(orders), "orders": orders}
 
 async def get_general_stats():
-    """Agregações e contagens utilizando aggregation pipeline (Requisito e/g)"""
+    """Aggregations and counts using aggregation pipeline (Requirement e/g)"""
     total_products = await Product.count()
     client_stats = await order_crud.count_orders_by_client()
     return {

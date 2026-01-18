@@ -1,0 +1,624 @@
+{
+  "clients": [
+    {
+      "id": 1,
+      "name": "Construtora Horizonte Ltda",
+      "email": "compras@horizonteconstrutora.com.br",
+      "address": "Av. Dom Manuel, 1200 - Centro, Fortaleza - CE"
+    },
+    {
+      "id": 2,
+      "name": "Engenharia Sousa & Filhos",
+      "email": "sac@sousaengenharia.com.br",
+      "address": "Rua Padre Valdevino, 455 - Aldeota, Fortaleza - CE"
+    },
+    {
+      "id": 3,
+      "name": "Reformas Nova Casa",
+      "email": "contato@novacasa.com.br",
+      "address": "Rua Joaquim Nabuco, 88 - Meireles, Fortaleza - CE"
+    },
+    {
+      "id": 4,
+      "name": "Mestre de Obras Carlos Pereira",
+      "email": "carlos.pereira.obras@gmail.com",
+      "address": "Rua Barão de Aratanha, 900 - Fátima, Fortaleza - CE"
+    },
+    {
+      "id": 5,
+      "name": "Arq. Mariana Lima",
+      "email": "mariana.lima.arq@gmail.com",
+      "address": "Av. Santos Dumont, 3250 - Papicu, Fortaleza - CE"
+    },
+    {
+      "id": 6,
+      "name": "Serralheria Metal Forte",
+      "email": "vendas@metalforte.com.br",
+      "address": "Rua Dr. José Lourenço, 70 - Dionísio Torres, Fortaleza - CE"
+    },
+    {
+      "id": 7,
+      "name": "Eletricista João Martins",
+      "email": "joaomartins.eletrica@gmail.com",
+      "address": "Rua 24 de Maio, 510 - Centro, Fortaleza - CE"
+    },
+    {
+      "id": 8,
+      "name": "Hidráulica & Gás Ribeiro",
+      "email": "orcamentos@ribeirohidraulica.com.br",
+      "address": "Av. Washington Soares, 6000 - Messejana, Fortaleza - CE"
+    },
+    {
+      "id": 9,
+      "name": "Pinturas e Acabamentos Ideal",
+      "email": "ideal.pinturas@gmail.com",
+      "address": "Rua Monsenhor Bruno, 121 - Aldeota, Fortaleza - CE"
+    },
+    {
+      "id": 10,
+      "name": "Condomínio Parque das Dunas",
+      "email": "sindico@parquedasdunas.com.br",
+      "address": "Rua Bento Albuquerque, 2500 - Cocó, Fortaleza - CE"
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "name": "Cimento CP II 50kg",
+      "quantity": 380,
+      "unitPrice": 34.9
+    },
+    {
+      "id": 2,
+      "name": "Areia média lavada (m³)",
+      "quantity": 75,
+      "unitPrice": 145.0
+    },
+    {
+      "id": 3,
+      "name": "Brita 1 (m³)",
+      "quantity": 62,
+      "unitPrice": 185.0
+    },
+    {
+      "id": 4,
+      "name": "Tijolo cerâmico 8 furos (milheiro)",
+      "quantity": 28,
+      "unitPrice": 980.0
+    },
+    {
+      "id": 5,
+      "name": "Bloco de concreto 14x19x39",
+      "quantity": 1200,
+      "unitPrice": 4.2
+    },
+    {
+      "id": 6,
+      "name": "Vergalhão CA-50 10mm (12m)",
+      "quantity": 180,
+      "unitPrice": 79.9
+    },
+    {
+      "id": 7,
+      "name": "Arame recozido 1kg",
+      "quantity": 95,
+      "unitPrice": 13.9
+    },
+    {
+      "id": 8,
+      "name": "Tábua pinus 1\" x 20cm x 3m",
+      "quantity": 210,
+      "unitPrice": 32.5
+    },
+    {
+      "id": 9,
+      "name": "Compensado plastificado 18mm (1,10x2,20)",
+      "quantity": 65,
+      "unitPrice": 169.9
+    },
+    {
+      "id": 10,
+      "name": "Cal hidratada 20kg",
+      "quantity": 140,
+      "unitPrice": 18.9
+    },
+    {
+      "id": 11,
+      "name": "Argamassa AC-I 20kg",
+      "quantity": 260,
+      "unitPrice": 19.9
+    },
+    {
+      "id": 12,
+      "name": "Rejunte cinza 1kg",
+      "quantity": 160,
+      "unitPrice": 6.9
+    },
+    {
+      "id": 13,
+      "name": "Tinta acrílica branca 18L",
+      "quantity": 55,
+      "unitPrice": 289.9
+    },
+    {
+      "id": 14,
+      "name": "Selador acrílico 18L",
+      "quantity": 35,
+      "unitPrice": 219.9
+    },
+    {
+      "id": 15,
+      "name": "Massa corrida PVA 25kg",
+      "quantity": 80,
+      "unitPrice": 89.9
+    },
+    {
+      "id": 16,
+      "name": "Rolo de pintura 23cm",
+      "quantity": 120,
+      "unitPrice": 18.5
+    },
+    {
+      "id": 17,
+      "name": "Trincha 2\"",
+      "quantity": 200,
+      "unitPrice": 7.5
+    },
+    {
+      "id": 18,
+      "name": "Disco de corte 4.1/2\" (115mm)",
+      "quantity": 320,
+      "unitPrice": 5.9
+    },
+    {
+      "id": 19,
+      "name": "Disco diamantado 110mm",
+      "quantity": 70,
+      "unitPrice": 39.9
+    },
+    {
+      "id": 20,
+      "name": "Broca concreto 8mm",
+      "quantity": 150,
+      "unitPrice": 9.9
+    },
+    {
+      "id": 21,
+      "name": "Parafuso drywall 3,5x25 (1000 un)",
+      "quantity": 40,
+      "unitPrice": 79.0
+    },
+    {
+      "id": 22,
+      "name": "Bucha nylon 8mm (100 un)",
+      "quantity": 85,
+      "unitPrice": 18.9
+    },
+    {
+      "id": 23,
+      "name": "Tubo PVC esgoto 100mm (6m)",
+      "quantity": 90,
+      "unitPrice": 119.9
+    },
+    {
+      "id": 24,
+      "name": "Joelho PVC esgoto 100mm",
+      "quantity": 260,
+      "unitPrice": 12.9
+    },
+    {
+      "id": 25,
+      "name": "Tubo PVC soldável 25mm (6m)",
+      "quantity": 120,
+      "unitPrice": 39.9
+    },
+    {
+      "id": 26,
+      "name": "Registro esfera soldável 25mm",
+      "quantity": 60,
+      "unitPrice": 29.9
+    },
+    {
+      "id": 27,
+      "name": "Cabo flexível 2,5mm² (rolo 100m)",
+      "quantity": 38,
+      "unitPrice": 289.0
+    },
+    {
+      "id": 28,
+      "name": "Disjuntor DIN 20A",
+      "quantity": 110,
+      "unitPrice": 19.9
+    },
+    {
+      "id": 29,
+      "name": "Tomada 10A (padrão NBR)",
+      "quantity": 240,
+      "unitPrice": 12.5
+    },
+    {
+      "id": 30,
+      "name": "Interruptor simples 10A",
+      "quantity": 210,
+      "unitPrice": 11.9
+    }
+  ],
+  "orders": [
+    {
+      "id": 1,
+      "orderDate": "2026-01-02",
+      "movementType": "purchase",
+      "clientId": 1,
+      "productIds": [
+        2,
+        5,
+        13,
+        21
+      ]
+    },
+    {
+      "id": 2,
+      "orderDate": "2026-01-03",
+      "movementType": "return",
+      "clientId": 2,
+      "productIds": [
+        2,
+        4,
+        12,
+        19,
+        30
+      ]
+    },
+    {
+      "id": 3,
+      "orderDate": "2026-01-04",
+      "movementType": "purchase",
+      "clientId": 3,
+      "productIds": [
+        2,
+        3,
+        14
+      ]
+    },
+    {
+      "id": 4,
+      "orderDate": "2026-01-05",
+      "movementType": "purchase",
+      "clientId": 4,
+      "productIds": [
+        3,
+        8,
+        18
+      ]
+    },
+    {
+      "id": 5,
+      "orderDate": "2026-01-06",
+      "movementType": "purchase",
+      "clientId": 5,
+      "productIds": [
+        4,
+        19,
+        27
+      ]
+    },
+    {
+      "id": 6,
+      "orderDate": "2026-01-07",
+      "movementType": "purchase",
+      "clientId": 6,
+      "productIds": [
+        2,
+        8,
+        13,
+        18,
+        19
+      ]
+    },
+    {
+      "id": 7,
+      "orderDate": "2026-01-08",
+      "movementType": "return",
+      "clientId": 7,
+      "productIds": [
+        4,
+        5,
+        14,
+        18
+      ]
+    },
+    {
+      "id": 8,
+      "orderDate": "2026-01-09",
+      "movementType": "purchase",
+      "clientId": 8,
+      "productIds": [
+        6,
+        18,
+        22,
+        27
+      ]
+    },
+    {
+      "id": 9,
+      "orderDate": "2026-01-10",
+      "movementType": "return",
+      "clientId": 9,
+      "productIds": [
+        4,
+        7,
+        12,
+        19,
+        21
+      ]
+    },
+    {
+      "id": 10,
+      "orderDate": "2026-01-11",
+      "movementType": "purchase",
+      "clientId": 10,
+      "productIds": [
+        2,
+        19,
+        20
+      ]
+    },
+    {
+      "id": 11,
+      "orderDate": "2026-01-12",
+      "movementType": "purchase",
+      "clientId": 1,
+      "productIds": [
+        14,
+        18,
+        22,
+        25
+      ]
+    },
+    {
+      "id": 12,
+      "orderDate": "2026-01-13",
+      "movementType": "purchase",
+      "clientId": 2,
+      "productIds": [
+        12,
+        15,
+        19,
+        30
+      ]
+    },
+    {
+      "id": 13,
+      "orderDate": "2026-01-14",
+      "movementType": "purchase",
+      "clientId": 3,
+      "productIds": [
+        6,
+        23,
+        26
+      ]
+    },
+    {
+      "id": 14,
+      "orderDate": "2026-01-15",
+      "movementType": "purchase",
+      "clientId": 4,
+      "productIds": [
+        10,
+        17,
+        19
+      ]
+    },
+    {
+      "id": 15,
+      "orderDate": "2026-01-16",
+      "movementType": "purchase",
+      "clientId": 5,
+      "productIds": [
+        10,
+        15,
+        20,
+        24
+      ]
+    },
+    {
+      "id": 16,
+      "orderDate": "2026-01-17",
+      "movementType": "purchase",
+      "clientId": 6,
+      "productIds": [
+        6,
+        14,
+        17
+      ]
+    },
+    {
+      "id": 17,
+      "orderDate": "2026-01-18",
+      "movementType": "purchase",
+      "clientId": 7,
+      "productIds": [
+        14,
+        16,
+        30
+      ]
+    },
+    {
+      "id": 18,
+      "orderDate": "2026-01-19",
+      "movementType": "purchase",
+      "clientId": 8,
+      "productIds": [
+        18,
+        19,
+        25
+      ]
+    },
+    {
+      "id": 19,
+      "orderDate": "2026-01-20",
+      "movementType": "return",
+      "clientId": 9,
+      "productIds": [
+        12,
+        16,
+        20,
+        23
+      ]
+    },
+    {
+      "id": 20,
+      "orderDate": "2026-01-21",
+      "movementType": "purchase",
+      "clientId": 10,
+      "productIds": [
+        3,
+        9,
+        16,
+        27
+      ]
+    }
+  ],
+  "payments": [
+    {
+      "id": 1,
+      "paymentDate": "2026-01-02",
+      "paymentMethod": "pix",
+      "paymentStatus": true,
+      "orderId": 1
+    },
+    {
+      "id": 2,
+      "paymentDate": "2026-01-03",
+      "paymentMethod": "boleto",
+      "paymentStatus": false,
+      "orderId": 2
+    },
+    {
+      "id": 3,
+      "paymentDate": "2026-01-04",
+      "paymentMethod": "boleto",
+      "paymentStatus": true,
+      "orderId": 3
+    },
+    {
+      "id": 4,
+      "paymentDate": "2026-01-05",
+      "paymentMethod": "cash",
+      "paymentStatus": true,
+      "orderId": 4
+    },
+    {
+      "id": 5,
+      "paymentDate": "2026-01-06",
+      "paymentMethod": "boleto",
+      "paymentStatus": true,
+      "orderId": 5
+    },
+    {
+      "id": 6,
+      "paymentDate": "2026-01-07",
+      "paymentMethod": "pix",
+      "paymentStatus": true,
+      "orderId": 6
+    },
+    {
+      "id": 7,
+      "paymentDate": "2026-01-08",
+      "paymentMethod": "cash",
+      "paymentStatus": false,
+      "orderId": 7
+    },
+    {
+      "id": 8,
+      "paymentDate": "2026-01-09",
+      "paymentMethod": "card",
+      "paymentStatus": true,
+      "orderId": 8
+    },
+    {
+      "id": 9,
+      "paymentDate": "2026-01-10",
+      "paymentMethod": "transfer",
+      "paymentStatus": true,
+      "orderId": 9
+    },
+    {
+      "id": 10,
+      "paymentDate": "2026-01-11",
+      "paymentMethod": "cash",
+      "paymentStatus": true,
+      "orderId": 10
+    },
+    {
+      "id": 11,
+      "paymentDate": "2026-01-12",
+      "paymentMethod": "pix",
+      "paymentStatus": true,
+      "orderId": 11
+    },
+    {
+      "id": 12,
+      "paymentDate": "2026-01-13",
+      "paymentMethod": "card",
+      "paymentStatus": true,
+      "orderId": 12
+    },
+    {
+      "id": 13,
+      "paymentDate": "2026-01-14",
+      "paymentMethod": "boleto",
+      "paymentStatus": true,
+      "orderId": 13
+    },
+    {
+      "id": 14,
+      "paymentDate": "2026-01-15",
+      "paymentMethod": "card",
+      "paymentStatus": true,
+      "orderId": 14
+    },
+    {
+      "id": 15,
+      "paymentDate": "2026-01-16",
+      "paymentMethod": "card",
+      "paymentStatus": true,
+      "orderId": 15
+    },
+    {
+      "id": 16,
+      "paymentDate": "2026-01-17",
+      "paymentMethod": "cash",
+      "paymentStatus": true,
+      "orderId": 16
+    },
+    {
+      "id": 17,
+      "paymentDate": "2026-01-18",
+      "paymentMethod": "cash",
+      "paymentStatus": true,
+      "orderId": 17
+    },
+    {
+      "id": 18,
+      "paymentDate": "2026-01-19",
+      "paymentMethod": "cash",
+      "paymentStatus": true,
+      "orderId": 18
+    },
+    {
+      "id": 19,
+      "paymentDate": "2026-01-20",
+      "paymentMethod": "pix",
+      "paymentStatus": true,
+      "orderId": 19
+    },
+    {
+      "id": 20,
+      "paymentDate": "2026-01-21",
+      "paymentMethod": "cash",
+      "paymentStatus": true,
+      "orderId": 20
+    }
+  ]
+}

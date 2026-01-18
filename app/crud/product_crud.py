@@ -12,11 +12,11 @@ async def get_all_products(size: int, offset: int) -> Tuple[List[Product], int]:
     return products, total
 
 async def list_products_sorted(size: int, offset: int, sort_field: str = "name"):
-    """Classificações e ordenações"""
+    """Classifications and sorting"""
     return await Product.find_all().sort(sort_field).skip(offset).limit(size).to_list()
 
 async def get_total_products_count_crud():
-    """Mostrar a quantidade total de produtos cadastrados"""
+    """Show the total quantity of registered products"""
     return await Product.count()
 
 async def get_products_by_name(name: str, size: int, offset: int) -> Tuple[List[Product], int]:
@@ -37,7 +37,7 @@ async def get_product_crud(product_id: PydanticObjectId) -> Product | None:
 
 async def search_products_by_name(name_query: str) -> List[Product]:
     """
-    Procura produtos pelo nome usando regex case-insensitive.
+    Search products by name using case-insensitive regex.
     """
     return await Product.find(
         {"name": {"$regex": name_query, "$options": "i"}}
