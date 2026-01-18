@@ -2,7 +2,7 @@
 
 ## Students
 - Leonardo Martins de Loiola - 553762
-- Lucas Cavalcante Torres - 557156
+- Lucas de Araújo Torres - 557156
 - Roberto Alexandre da Silva Sousa Junior - 475223
 
 ## Project Description
