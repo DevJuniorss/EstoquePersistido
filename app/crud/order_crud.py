@@ -70,9 +70,6 @@ async def get_orders_by_year_crud(year: int):
         fetch_links=True
     ).to_list()
 
-async def get_total_products_count_crud():
-    """Mostrar a quantidade total de produtos cadastrados"""
-    return await Product.count()
 
 async def get_order_stats_agg():
     """Agregações: Quantidade de itens por pedido"""
@@ -82,6 +79,3 @@ async def get_order_stats_agg():
     ]
     return await Order.aggregate(pipeline).to_list()
 
-async def list_products_sorted(size: int, offset: int, sort_field: str = "name"):
-    """Classificações e ordenações"""
-    return await Product.find_all().sort(sort_field).skip(offset).limit(size).to_list()

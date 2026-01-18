@@ -52,11 +52,3 @@ async def delete_client_crud(client_id: PydanticObjectId) -> Client | None:
     
     await client.delete()
     return client
-
-async def search_products_by_name(name_query: str) -> List[Product]:
-    """
-    Procura produtos pelo nome usando regex case-insensitive.
-    """
-    return await Product.find(
-        {"name": {"$regex": name_query, "$options": "i"}}
-    ).to_list()
