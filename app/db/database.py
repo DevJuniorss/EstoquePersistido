@@ -8,7 +8,7 @@ from app.models.product import Product
 
 async def init_db():
     client = AsyncIOMotorClient(os.getenv("DATABASE_URL"))    
-    database = client.get_database("stock_db")
+    database = client.get_database("estoque_db")
     
     await init_beanie(database=database, document_models=[
         Client,
