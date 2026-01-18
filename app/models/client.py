@@ -13,8 +13,8 @@ class Client(Document):
     class Config:
         json_schema_extra = {
             "example": {
-                "name": "Lucas Torres",
-                "email": "lucas@email.com",
-                "address": "Rua das Flores, 123"
+                "name": "string",
+                "email": "string",
+                "address": "string"
             }
         }

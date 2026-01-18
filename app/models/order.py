@@ -25,3 +25,23 @@ class Order(Document):
 
     class Settings:
         name = "orders"
+        
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "order_date": "string",
+                "movement_type": "string",
+                "client": "string",
+                "payment": {
+                    "payment_method": "string",
+                    "payment_date": "string",
+                    "status": "string"
+                },
+                "items": [
+                    {
+                        "product": "string",
+                        "quantity": 0
+                    }
+                ]
+            }
+        }

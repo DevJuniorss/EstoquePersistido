@@ -8,5 +8,13 @@ class Product(Document):
 
     class Settings:
         name = "products"
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "name": "string",
+                "quantity": 0,
+                "unitPrice": 0.0
+            }
+        }
 
     
