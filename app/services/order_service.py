@@ -131,3 +131,18 @@ async def get_general_stats():
         "total_products_in_catalog": total_products,
         "orders_per_client": client_stats
     }
+    
+
+async def list_orders(size: int, offset: int):
+    """
+    Retrieves a paginated list of orders.
+    """
+    orders, total = await order_crud.get_all_orders(size, offset)
+    
+    return {
+        "message": "List of orders",
+        "data": orders,
+        "size": size,
+        "offset": offset,
+        "total": total
+    }

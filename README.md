@@ -1,4 +1,4 @@
-# Trabalho Persistência
+# Trabalho Persistência: API com FastAPI e MongoDB
 
 ## Alunos
 - Leonardo Martins de Loiola - 553762
@@ -6,93 +6,84 @@
 - Roberto Alexandre da Silva Sousa Junior - 475223
 
 ## Descrição do Projeto
-Este projeto consiste em um sistema de gerenciamento de vendas e produtos, implementado com FastAPI e SQLModel. Ele contempla operações de CRUD para clientes, pedidos, produtos e pagamentos, além de consultas mais avançadas com filtros e agregações.
+Este projeto consiste em um sistema de gerenciamento de vendas e produtos, migrado de uma arquitetura relacional para **NoSQL**, utilizando **FastAPI** e **MongoDB** (via **Beanie ODM**). Ele contempla operações de CRUD completas para clientes, pedidos e produtos, além de consultas avançadas utilizando recursos nativos do MongoDB.
 
-O projeto utiliza boas práticas recomendadas pela comunidade FastAPI para aplicações maiores, seguindo o modelo de arquitetura baseado em file-type, conforme descrito na documentação oficial: [FastAPI - Bigger Applications](https://fastapi.tiangolo.com/tutorial/bigger-applications/).
+O projeto segue boas práticas de desenvolvimento assíncrono e arquitetura modular, garantindo performance e escalabilidade.
 
-Além disso, algumas funcionalidades extras foram implementadas, como:
-- Busca por nome de clientes e produtos com filtros de string.
-- Contagem de pedidos por produto.
-- Consultas com carregamento de relacionamentos usando `selectinload` para otimização.
-- Paginação em endpoints de listagem.
-- Integração com múltiplos bancos de dados (SQLite para desenvolvimento e Neon para o banco remoto).
-- Migrações de banco de dados utilizando Alembic.
-- Utilização do UV como ambiente virtual e gerenciador de dependências.
+### Funcionalidades Implementadas
+- **Tecnologia NoSQL:** Persistência de dados utilizando MongoDB e Motor (driver assíncrono).
+- **ODM Beanie:** Mapeamento de objetos-documentos para validação e estruturação dos dados.
+- **Consultas Avançadas:**
+    - Busca textual por **Regex** (Case-insensitive) para clientes e produtos.
+    - **Aggregation Pipelines** para estatísticas (ex: contagem de itens por pedido, total de pedidos por cliente).
+    - Filtros temporais (consultas por ano).
+- **Relacionamentos:**
+    - Uso de **Document Links** (Referências) para relacionar Pedidos a Clientes e Produtos.
+    - Uso de **Embedded Documents** (Documentos embutidos) para Pagamentos e Itens do Pedido, otimizando a leitura.
+    - Carregamento inteligente de relações com `fetch_links=True`.
+- **Paginação:** Implementada nativamente com `skip` e `limit` do MongoDB em todos os endpoints de listagem.
+- **Gerenciamento de Dependências:** Utilização do **uv** para gestão ágil do ambiente virtual.
 
 Link do repositório do projeto para mais detalhes: [repositorio](https://github.com/DevJuniorss/EstoquePersistido)
 
 ## Estrutura do Projeto
-O projeto está dividido em camadas seguindo o padrão recomendado:
-- `models`: Definição das entidades do banco de dados.
-- `schemas`: Modelos de leitura e criação para validação.
-- `crud`: Operações de banco de dados (inserção, atualização, deleção, consultas).
-- `services`: Regras de negócio e processamento de dados.
-- `routers`: Endpoints da API organizados por entidade.
-- `db`: Configuração e conexão com o banco de dados.
-- `divisao_tarefas.txt`: Arquivo que descreve a divisão de responsabilidades entre os integrantes do grupo.
+O projeto está organizado em camadas para facilitar a manutenção:
+- `models`: Definição dos Documentos (`Client`, `Product`, `Order`) e sub-documentos (`Payment`, `OrderItem`).
+- `crud`: Camada de acesso direto ao banco (queries Beanie, aggregates, filtros).
+- `services`: Regras de negócio e orquestração dos dados.
+- `routers`: Endpoints da API (Controllers).
+- `db`: Configuração da conexão com o MongoDB Atlas ou Local.
 
+## Esquema de Banco (NoSQL)
 
+Neste modelo não-relaciona, utilizamos **Coleções** e **Documentos**. O diagrama abaixo ilustra como os dados estão estruturados e relacionados. Note que `Payment` e `OrderItem` vivem dentro de `Order`.
 
-## Esquema de Banco
 ```mermaid
 classDiagram
-direction LR
+    direction LR
 
-class Client {
-    int: id
-    str: name
-    str: email
-    str: address
-}
+    class Client {
+        <<Collection>>
+        _id: ObjectId
+        name: str
+        email: str
+        address: str
+    }
 
-class Order {
-    int: id
-    date: orderDate
-    str: movementType
-}
+    class Product {
+        <<Collection>>
+        _id: ObjectId
+        name: str
+        quantity: int
+        unitPrice: float
+    }
 
-class Payment {
-    int: id
-    date: paymentDate
-    str: paymentMethod
-    bool: paymentStatus
-}
+    class Order {
+        <<Collection>>
+        _id: ObjectId
+        order_date: datetime
+        movement_type: str
+        client: Link[Client]
+        payment: Embedded[Payment]
+        items: List[Embedded[OrderItem]]
+    }
 
-class Product {
-    int: id
-    str: name
-    int: quantity
-    float: unitPrice
-}
+    class Payment {
+        <<Embedded>>
+        payment_method: str
+        payment_date: datetime
+        status: str
+    }
 
-%% RELACIONAMENTOS
-Client "1" -- "*" Order 
-Order "1" -- "1" Payment
-Order "*" --> "*" Product
-```
+    class OrderItem {
+        <<Embedded>>
+        quantity: int
+        product: Link[Product]
+    }
 
-## Instruções para Uso
-
-Este projeto utiliza o **[uv](https://github.com/astral-sh/uv)** para gerenciamento de dependências e ambiente virtual.
-
-### Pré-requisitos
-Certifique-se de ter o `uv` instalado em sua máquina.
-
-### Passo a Passo
-
-1. **Instalar Dependências**
-   Dentro da pasta do projeto, execute o comando abaixo. O `uv` lerá o arquivo `pyproject.toml`, criará automaticamente o ambiente virtual (`.venv`) e instalará todas as bibliotecas necessárias.
-
-   ```bash
-   uv sync
-   ```
-
-2. Ativar o Ambiente Virtual Após a sincronização, você precisa ativar o ambiente para rodar o projeto:
-
-    ```bash
-    source .venv/bin/activate
+    %% RELACIONAMENTOS NOSQL
+    Client "1" -- "0..*" Order : Referenced (Link)
+    Order *-- "1" Payment : Embedded (Dentro do Documento)
+    Order *-- "1..*" OrderItem : Embedded List (Dentro do Documento)
+    OrderItem ..> Product : Referenced (Link)
     ```
-3. Para rodar a aplicação, faça:
-```bash
-    uvicorn app.main:app --reload
-```

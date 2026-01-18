@@ -48,6 +48,6 @@ async def get_products(
     offset: int = Query(0, ge=0),
     sort_by: str = Query("name")
 ):
-    """Recupera lista de produtos ordenada por campo específico."""
+    """Retrieve a list of products sorted by specific field."""
     products = await Product.find_all().sort(sort_by).skip(offset).limit(size).to_list()
     return {"data": products}

@@ -79,3 +79,10 @@ async def get_order_stats_agg():
     ]
     return await Order.aggregate(pipeline).to_list()
 
+async def get_all_orders(size: int, offset: int):
+    """
+    Retrieve all orders with pagination and fetched links.
+    """
+    total = await Order.count()
+    orders = await Order.find_all(fetch_links=True).skip(offset).limit(size).to_list(length=None)    
+    return orders, total

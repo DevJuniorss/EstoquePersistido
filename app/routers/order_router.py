@@ -1,7 +1,9 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 from app.services.order_service import *
 
 order_router = APIRouter(prefix="/orders")
+
+
 
 
 @order_router.post("/")
@@ -9,6 +11,13 @@ async def create_order(order: Order):
     """Create a new order."""
     return await create_order_service(order)
 
+@order_router.get("/")
+async def get_orders(
+    size: int = Query(10, ge=1, le=100),
+    offset: int = Query(0, ge=0)
+):
+    """Retrieve a paginated list of orders."""
+    return await list_orders(size=size, offset=offset)
 
 @order_router.get("/{order_id}")
 async def get_order(order_id: int):

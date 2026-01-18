@@ -119,7 +119,7 @@ async def delete_product_service(product_id: str):
     
 async def search_products_service(name: str):
     """
-    Serviço para mediar a busca de produtos.
+    Searches products by name (partial match).
     """
     products = await product_crud.search_products_by_name(name)
     return {"data": products}
