@@ -1,28 +1,47 @@
-from sqlmodel import Relationship, SQLModel, Field
+from datetime import datetime
 from typing import List, Optional
-from datetime import date
+from beanie import Document, Link
+from pydantic import BaseModel
+from app.models.client import Client
+from app.models.product import Product
 
+class Payment(BaseModel):
+    payment_method: str
+    payment_date: datetime = datetime.now()
+    status: str = "PENDING"
 
-from typing import TYPE_CHECKING
+class OrderItem(BaseModel):
+    product: Link[Product]
+    quantity: int
 
-from app.models.product_order import ProductOrder
-
-if TYPE_CHECKING:
-    from app.models.client import Client
-    from app.models.payment import Payment
-    from app.models.product_order import ProductOrder
-    from app.models.product import Product
-
-
-
-class Order(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    order_date: date
+class Order(Document):
+    order_date: datetime
     movement_type: str
+    client: Link[Client]
 
-    client_id: int = Field(foreign_key="client.id")
-    payment_id: int = Field(foreign_key="payment.id")
+    payment: Payment 
+    
+    items: List[OrderItem]
 
-    product_orders: List["ProductOrder"] = Relationship(back_populates="order", sa_relationship_kwargs={"cascade": "all, delete-orphan"})
-    client: "Client" = Relationship(back_populates="orders")
-    payment: "Payment" = Relationship(back_populates="orders")
+    class Settings:
+        name = "orders"
+        
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "order_date": "string",
+                "movement_type": "string",
+                "client": "string",
+                "payment": {
+                    "payment_method": "string",
+                    "payment_date": "string",
+                    "status": "string"
+                },
+                "items": [
+                    {
+                        "product": "string",
+                        "quantity": 0
+                    }
+                ]
+            }
+        }

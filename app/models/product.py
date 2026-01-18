@@ -1,13 +1,20 @@
-from sqlmodel import Relationship, SQLModel, Field
-from typing import List, Optional
+from beanie import Document
+from pydantic import BaseModel, Field
 
-from app.models.order import Order
-from app.models.product_order import ProductOrder
-
-class Product(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+class Product(Document):
     name: str
-    unit_price: float
+    quantity: int
+    unit_price: float = Field(..., alias="unitPrice")
 
-    product_orders: List["ProductOrder"] = Relationship(back_populates="product", 
-                                                        sa_relationship_kwargs={"cascade": "all, delete-orphan"})
+    class Settings:
+        name = "products"
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "name": "string",
+                "quantity": 0,
+                "unitPrice": 0.0
+            }
+        }
+
+    

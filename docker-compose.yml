@@ -1,0 +1,23 @@
+services:
+  # O Banco de Dados
+  db:
+    image: mongo:latest
+    container_name: meu_mongo_local
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data_local:/data/db
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: db
+    depends_on:
+      - db
+
+volumes:
+  mongo_data_local:

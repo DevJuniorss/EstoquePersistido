@@ -1,98 +1,88 @@
-from sqlmodel import func, select
-from app.db.database import get_session
-from app.models import order
-from app.models.client import Client
+from datetime import datetime
 from app.models.order import Order
-from app.models.payment import Payment
-from app.models.product_order import ProductOrder
-from app.schemas.order_create import OrderCreate
-from sqlalchemy.orm import selectinload
+from app.models.product import Product
+from beanie import PydanticObjectId
+from typing import List, Optional
 
+async def get_order_crud(order_id: PydanticObjectId) -> Optional[Order]:
+    """
+    Retrieve an order by ID, fetching related links (Client, Products).
+    """
+    return await Order.get(order_id, fetch_links=True)
 
-
-
-async def get_all_orders(size: int, offset: int):
-    with get_session() as session:
-
-        total = session.exec(
-            select(func.count()).select_from(Order)
-        ).one()
-
-        statement = (
-            select(Order)
-            .options(
-                selectinload(Order.client),
-                selectinload(Order.payment),
-                selectinload(Order.product_orders)
-                    .selectinload(ProductOrder.product),
-            )
-            .limit(size)
-            .offset(offset)
-        )
-
-        orders = session.exec(statement).all()
-
-    return orders, total
-
-async def get_order_crud(order_id: int):
-    with get_session() as session:
-        
-        statement = (
-    select(Order)
-    .where(Order.id == order_id)
-    .options(
-        selectinload(Order.client),
-        selectinload(Order.payment),
-        selectinload(Order.product_orders)
-            .selectinload(ProductOrder.product),
-    )
-)
-
-    order = session.exec(statement).first()
+async def create_order_crud(order: Order) -> Order:
+    """
+    Save a new order to the database.
+    """
+    await order.create()
     return order
 
-async def create_order_crud(order_data: OrderCreate):
-    with get_session() as session:
-        order = Order(
-            order_date=order_data.order_date,
-            movement_type=order_data.movement_type,
-            client_id=order_data.client_id,
-            payment_id=order_data.payment_id
-        )
 
-        session.add(order)
-        session.commit()
-        session.refresh(order)
-
-        for item in order_data.items:
-            product_order = ProductOrder(
-                order_id=order.id,
-                product_id=item.product_id,
-                quantity=item.quantity
-                )
-            session.add(product_order)
-
-        session.commit()
-        session.refresh(order)
-        return order
+async def get_orders_by_year(year: int):
+    start_date = datetime(year, 1, 1)
+    end_date = datetime(year + 1, 1, 1)
     
-async def delete_order_crud(order_id: int):
-    with get_session() as session:
-        order = session.get(Order, order_id)
-        if not order:
-            return None
-        session.delete(order)
-        session.commit()
-        return order
+    orders = await Order.find(
+        Order.order_date >= start_date,
+        Order.order_date < end_date
+    , fetch_links=True).to_list()
+    return orders
+
+async def count_orders_by_client():
+    pipeline = [
+        {"$group": {"_id": "$client.$id", "total_orders": {"$sum": 1}}},
+    ]
+    result = await Order.aggregate(pipeline).to_list()
+    return result
+
+async def delete_order_crud(order_id: PydanticObjectId) -> Optional[Order]:
+    """
+    Delete an order by ID.
+    """
+    order = await Order.get(order_id)
+    if not order:
+        return None
+    await order.delete()
+    return order
+
+async def update_order_crud(order_id: PydanticObjectId, order_data: dict) -> Optional[Order]:
+    """
+    Update an order with new data.
+    """
+    order = await Order.get(order_id)
+    if not order:
+        return None
     
-async def update_order_crud(order_id: int, order_data: OrderCreate):
-    with get_session() as session:
-        order = session.get(Order, order_id)
-        if not order:
-            return None
-        for key, value in order_data.model_dump(exclude_unset=True, exclude={"items"}).items():
+    for key, value in order_data.items():
+        if value is not None:
             setattr(order, key, value)
-        session.add(order)
-        session.commit()
-        session.refresh(order)
-        return order
+            
+    await order.save()
+    return order
+
+async def get_orders_by_year_crud(year: int):
+    """Filtros por data/ano utilizando operadores do MongoDB"""
+    start_date = datetime(year, 1, 1)
+    end_date = datetime(year + 1, 1, 1)
+    return await Order.find(
+        Order.order_date >= start_date,
+        Order.order_date < end_date,
+        fetch_links=True
+    ).to_list()
+
+
+async def get_order_stats_agg():
+    """Agregações: Quantidade de itens por pedido"""
+    pipeline = [
+        {"$project": {"items_count": {"$size": "$items"}}},
+        {"$group": {"_id": None, "avg_items": {"$avg": "$items_count"}, "total_items": {"$sum": "$items_count"}}}
+    ]
+    return await Order.aggregate(pipeline).to_list()
+
+async def get_all_orders(size: int, offset: int):
+    """
+    Retrieve all orders with pagination and fetched links.
+    """
+    total = await Order.count()
+    orders = await Order.find_all(fetch_links=True).skip(offset).limit(size).to_list(length=None)    
+    return orders, total

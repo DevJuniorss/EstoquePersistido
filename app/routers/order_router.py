@@ -1,21 +1,23 @@
-from fastapi import APIRouter
-from app.schemas.order_create import OrderCreate
-from app.schemas.order_update import OrderUpdate
+from fastapi import APIRouter, Query
 from app.services.order_service import *
 
 order_router = APIRouter(prefix="/orders")
 
-@order_router.get("/")
-async def get_orders(size: int = 10, offset: int = 0):
-    """Retrieve a paginated list of orders."""
-    return await get_all_orders_service(size=size, offset=offset)
+
 
 
 @order_router.post("/")
-async def create_order(order: OrderCreate):
+async def create_order(order: Order):
     """Create a new order."""
     return await create_order_service(order)
 
+@order_router.get("/")
+async def get_orders(
+    size: int = Query(10, ge=1, le=100),
+    offset: int = Query(0, ge=0)
+):
+    """Retrieve a paginated list of orders."""
+    return await list_orders(size=size, offset=offset)
 
 @order_router.get("/{order_id}")
 async def get_order(order_id: int):
@@ -33,7 +35,25 @@ async def delete_order(order_id: int):
 
 
 @order_router.put("/{order_id}")
-async def update_order(order_id: int, order_data: OrderUpdate):
+async def update_order(order_id: int, order_data: Order):
     """Update an existing order by its ID."""
     updated_order = await update_order_service(order_id, order_data)
     return updated_order
+
+@order_router.get("/reports/stats")
+async def get_order_stats():
+    """Retorna estatísticas agregadas do sistema (Requisitos e, g, h)."""
+    return await get_general_stats()
+
+@order_router.get("/reports/year/{year}")
+async def get_by_year(year: int):
+    """Lista pedidos filtrados por ano (Requisito d)."""
+    return await get_orders_report_by_year(year)
+
+@order_router.get("/search/complex")
+async def complex_query(client_id: str):
+    """Consulta complexa envolvendo múltiplas coleções (Requisito g).
+    Busca todas as ordens de um cliente e detalha os produtos.
+    """
+    orders = await Order.find(Order.client.id == PydanticObjectId(client_id), fetch_links=True).to_list()
+    return {"client_id": client_id, "orders": orders}
