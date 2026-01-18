@@ -1,5 +1,6 @@
 from datetime import datetime
 from app.models.order import Order
+from app.models.product import Product
 from beanie import PydanticObjectId
 from typing import List, Optional
 
@@ -58,3 +59,29 @@ async def update_order_crud(order_id: PydanticObjectId, order_data: dict) -> Opt
             
     await order.save()
     return order
+
+async def get_orders_by_year_crud(year: int):
+    """Filtros por data/ano utilizando operadores do MongoDB"""
+    start_date = datetime(year, 1, 1)
+    end_date = datetime(year + 1, 1, 1)
+    return await Order.find(
+        Order.order_date >= start_date,
+        Order.order_date < end_date,
+        fetch_links=True
+    ).to_list()
+
+async def get_total_products_count_crud():
+    """Mostrar a quantidade total de produtos cadastrados"""
+    return await Product.count()
+
+async def get_order_stats_agg():
+    """Agregações: Quantidade de itens por pedido"""
+    pipeline = [
+        {"$project": {"items_count": {"$size": "$items"}}},
+        {"$group": {"_id": None, "avg_items": {"$avg": "$items_count"}, "total_items": {"$sum": "$items_count"}}}
+    ]
+    return await Order.aggregate(pipeline).to_list()
+
+async def list_products_sorted(size: int, offset: int, sort_field: str = "name"):
+    """Classificações e ordenações"""
+    return await Product.find_all().sort(sort_field).skip(offset).limit(size).to_list()

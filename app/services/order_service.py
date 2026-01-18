@@ -116,3 +116,18 @@ async def update_order_service(order_id: str, order_data: Order):
     await order.save()
     
     return {"message": "Order updated successfully", "data": order}
+
+async def get_orders_report_by_year(year: int):
+    orders = await order_crud.get_orders_by_year_crud(year)
+    if not orders:
+        raise HTTPException(status_code=404, detail=f"Nenhum pedido encontrado em {year}")
+    return {"year": year, "total": len(orders), "orders": orders}
+
+async def get_general_stats():
+    """Agregações e contagens utilizando aggregation pipeline (Requisito e/g)"""
+    total_products = await Product.count()
+    client_stats = await order_crud.count_orders_by_client()
+    return {
+        "total_products_in_catalog": total_products,
+        "orders_per_client": client_stats
+    }

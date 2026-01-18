@@ -41,3 +41,13 @@ async def update_product(product_id: str, product_data: Product):
 async def delete_product(product_id: str):
     """Delete a product by ID."""
     return await delete_product_service(product_id)
+
+@product_router.get('/')
+async def get_products(
+    size: int = Query(10, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    sort_by: str = Query("name")
+):
+    """Recupera lista de produtos ordenada por campo específico."""
+    products = await Product.find_all().sort(sort_by).skip(offset).limit(size).to_list()
+    return {"data": products}

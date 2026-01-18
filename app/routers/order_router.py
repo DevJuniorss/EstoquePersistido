@@ -30,3 +30,21 @@ async def update_order(order_id: int, order_data: Order):
     """Update an existing order by its ID."""
     updated_order = await update_order_service(order_id, order_data)
     return updated_order
+
+@order_router.get("/reports/stats")
+async def get_order_stats():
+    """Retorna estatísticas agregadas do sistema (Requisitos e, g, h)."""
+    return await get_general_stats()
+
+@order_router.get("/reports/year/{year}")
+async def get_by_year(year: int):
+    """Lista pedidos filtrados por ano (Requisito d)."""
+    return await get_orders_report_by_year(year)
+
+@order_router.get("/search/complex")
+async def complex_query(client_id: str):
+    """Consulta complexa envolvendo múltiplas coleções (Requisito g).
+    Busca todas as ordens de um cliente e detalha os produtos.
+    """
+    orders = await Order.find(Order.client.id == PydanticObjectId(client_id), fetch_links=True).to_list()
+    return {"client_id": client_id, "orders": orders}
