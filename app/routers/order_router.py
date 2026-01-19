@@ -19,7 +19,7 @@ async def get_orders(
     return await list_orders(size=size, offset=offset)
 
 @order_router.get("/{order_id}")
-async def get_order(order_id: int):
+async def get_order(order_id: str):
     """Retrieve an order by its ID, including client, payment, and products."""
     data = await get_order_service(order_id)
     print(data)
@@ -27,32 +27,31 @@ async def get_order(order_id: int):
 
 
 @order_router.delete("/{order_id}")
-async def delete_order(order_id: int):
+async def delete_order(order_id: str):
     """Delete an order by its ID."""
     deleted_order = await delete_order_service(order_id)
     return deleted_order
 
 
 @order_router.put("/{order_id}")
-async def update_order(order_id: int, order_data: Order):
+async def update_order(order_id: str, order_data: Order):
     """Update an existing order by its ID."""
     updated_order = await update_order_service(order_id, order_data)
     return updated_order
 
 @order_router.get("/reports/stats")
 async def get_order_stats():
-    """Retorna estatísticas agregadas do sistema (Requisitos e, g, h)."""
+    """Retorna estatísticas agregadas do sistema."""
     return await get_general_stats()
 
 @order_router.get("/reports/year/{year}")
 async def get_by_year(year: int):
-    """Lista pedidos filtrados por ano (Requisito d)."""
+    """Lista pedidos filtrados por ano."""
     return await get_orders_report_by_year(year)
 
-@order_router.get("/search/complex")
-async def complex_query(client_id: str):
-    """Consulta complexa envolvendo múltiplas coleções (Requisito g).
-    Busca todas as ordens de um cliente e detalha os produtos.
+@order_router.get("/search/all_client_orders")
+async def all_client_orders(client_id: str):
+    """Consulta todas as ordens de um cliente específico detalhando os produtos.
     """
     orders = await Order.find(Order.client.id == PydanticObjectId(client_id), fetch_links=True).to_list()
     return {"client_id": client_id, "orders": orders}

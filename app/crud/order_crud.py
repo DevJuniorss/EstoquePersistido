@@ -31,8 +31,11 @@ async def get_orders_by_year(year: int):
 async def count_orders_by_client():
     pipeline = [
         {"$group": {"_id": "$client.$id", "total_orders": {"$sum": 1}}},
+        {"$project": {"_id": 0,"client_id": {"$toString": "$_id"},"total_orders": 1}},
     ]
     result = await Order.aggregate(pipeline).to_list()
+
+    
     return result
 
 async def delete_order_crud(order_id: PydanticObjectId) -> Optional[Order]:

@@ -91,45 +91,34 @@ async def update_order_service(order_id: str, order_data: Order):
         raise HTTPException(status_code=400, detail="Invalid Order ID format")
     
     order = await Order.get(PydanticObjectId(order_id), fetch_links=True)
-    
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
 
     if order_data.items is not None:
         new_order_items = []
-        
         for item in order_data.items:
-            if item.quantity <= 0:
-                raise HTTPException(status_code=400, detail="Quantity must be greater than zero")
-
-            if not PydanticObjectId.is_valid(item.product_id):
-                 raise HTTPException(status_code=400, detail=f"Invalid Product ID: {item.product_id}")
-            product = await Product.get(PydanticObjectId(item.product_id))
+            p_id = item.product.to_ref().id
             
+            product = await Product.get(PydanticObjectId(p_id))
             if not product:
-                raise HTTPException(status_code=404, detail=f"Product {item.product_id} not found")
+                raise HTTPException(status_code=404, detail=f"Product {p_id} not found")
             
             new_order_items.append(OrderItem(product=product, quantity=item.quantity))
-        
         order.items = new_order_items
-
 
     data_dict = order_data.model_dump(exclude={"items"}, exclude_unset=True)
     
-    if "client_id" in data_dict:
-        cid = data_dict.pop("client_id")
-        if PydanticObjectId.is_valid(cid):
-            new_client = await Client.get(PydanticObjectId(cid))
-            if new_client:
-                order.client = new_client
-            else:
-                raise HTTPException(status_code=404, detail="Client not found")
+    if "client" in data_dict:
+        c_val = data_dict.pop("client")
+        c_id = c_val.to_ref().id if hasattr(c_val, "to_ref") else c_val
+        new_client = await Client.get(PydanticObjectId(c_id))
+        if new_client:
+            order.client = new_client
 
     for key, value in data_dict.items():
         setattr(order, key, value)
 
     await order.save()
-    
     return {"message": "Order updated successfully", "data": order}
 
 async def get_orders_report_by_year(year: int):
