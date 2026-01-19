@@ -106,6 +106,7 @@ Make sure you have installed on your machine:
 2. **Install dependencies**
     ```bash
     uv sync
+    uv source .venv/bin/activate
     ```
 3. **Populate Local Database**
     ```bash
