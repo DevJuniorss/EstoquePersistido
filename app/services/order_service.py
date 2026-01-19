@@ -1,3 +1,5 @@
+from datetime import datetime
+from typing import List
 from fastapi import HTTPException, status
 from beanie import PydanticObjectId
 
@@ -5,6 +7,19 @@ from app.models.order import Order, OrderItem
 from app.models.client import Client
 from app.models.product import Product
 from app.crud import order_crud
+from app.models.order import Payment 
+from pydantic import BaseModel
+
+class OrderItemCreate(BaseModel):
+    product: str # 
+    quantity: int
+
+class OrderCreate(BaseModel):
+    client: str 
+    order_date: datetime
+    movement_type: str
+    payment: Payment
+    items: List[OrderItemCreate]
 
 async def get_order_service(order_id: str):
     """
@@ -19,14 +34,14 @@ async def get_order_service(order_id: str):
 
     return {"message": "Order found", "data": order}
 
-async def create_order_service(order_data: Order):
+async def create_order_service(order_data: OrderCreate):
     """
-    Creates a new order. Validates Client and Products existence before saving.
+    Creates a new order using DTO pattern.
     """
-    if not PydanticObjectId.is_valid(order_data.client_id):
-        raise HTTPException(status_code=400, detail="Invalid Client ID")
+    if not PydanticObjectId.is_valid(order_data.client):
+        raise HTTPException(status_code=400, detail="Invalid Client ID format")
         
-    client = await Client.get(PydanticObjectId(order_data.client_id))
+    client = await Client.get(PydanticObjectId(order_data.client))
     if not client:
         raise HTTPException(status_code=404, detail="Client not found")
 
@@ -39,20 +54,20 @@ async def create_order_service(order_data: Order):
         if item.quantity <= 0:
             raise HTTPException(status_code=400, detail="Quantity must be greater than zero")
 
-        if not PydanticObjectId.is_valid(item.product_id):
-             raise HTTPException(status_code=400, detail=f"Invalid Product ID: {item.product_id}")
+        if not PydanticObjectId.is_valid(item.product):
+             raise HTTPException(status_code=400, detail=f"Invalid Product ID: {item.product}")
 
-        product = await Product.get(PydanticObjectId(item.product_id))
-        if not product:
-            raise HTTPException(status_code=404, detail=f"Product {item.product_id} not found")
+        product_obj = await Product.get(PydanticObjectId(item.product))
+        if not product_obj:
+            raise HTTPException(status_code=404, detail=f"Product {item.product} not found")
             
-        order_items.append(OrderItem(product=product, quantity=item.quantity))
+        order_items.append(OrderItem(product=product_obj, quantity=item.quantity))
 
     new_order = Order(
         order_date=order_data.order_date,
         movement_type=order_data.movement_type,
         client=client,
-        payment_id=str(order_data.payment_id),
+        payment=order_data.payment,
         items=order_items
     )
 
@@ -124,7 +139,7 @@ async def get_orders_report_by_year(year: int):
     return {"year": year, "total": len(orders), "orders": orders}
 
 async def get_general_stats():
-    """Aggregations and counts using aggregation pipeline (Requirement e/g)"""
+    """Aggregations and counts using aggregation pipeline"""
     total_products = await Product.count()
     client_stats = await order_crud.count_orders_by_client()
     return {

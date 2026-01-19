@@ -7,8 +7,7 @@ order_router = APIRouter(prefix="/orders")
 
 
 @order_router.post("/")
-async def create_order(order: Order):
-    """Create a new order."""
+async def create_order(order: OrderCreate):
     return await create_order_service(order)
 
 @order_router.get("/")
