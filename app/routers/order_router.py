@@ -51,7 +51,7 @@ async def get_by_year(year: int):
 
 @order_router.get("/search/all_client_orders")
 async def all_client_orders(client_id: str):
-    """Consulta todas as ordens de um cliente específico detalhando os produtos.
+    """Consulta todos os pedidos de um cliente específico detalhando os produtos.
     """
     orders = await Order.find(Order.client.id == PydanticObjectId(client_id), fetch_links=True).to_list()
     return {"client_id": client_id, "orders": orders}
