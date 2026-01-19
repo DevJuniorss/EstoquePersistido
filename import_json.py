@@ -20,11 +20,11 @@ async def main():
     
     await init_beanie(database=database, document_models=[Client, Product, Order])
 
-    print("📂 Reading dados_antigos.json file...")
+    print("Reading dados_antigos.json file...")
     with open("dados_antigos.json", "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    print("--- 🗑️  Cleaning current database... ---")
+    print("--- Cleaning current database... ---")
     await Order.delete_all()
     await Product.delete_all()
     await Client.delete_all()
@@ -32,7 +32,7 @@ async def main():
     map_clients = {}
     map_products = {}
 
-    print("--- 👤 Importing Clients... ---")
+    print("---Importing Clients... ---")
     for c_data in data["clients"]:
         new_client = await Client(
             name=c_data["name"],
@@ -42,7 +42,7 @@ async def main():
         
         map_clients[c_data["id"]] = new_client
 
-    print("--- 📦 Importing Products... ---")
+    print("---  Importing Products... ---")
     for p_data in data["products"]:
         new_product = await Product(
             name=p_data["name"],
@@ -52,7 +52,7 @@ async def main():
         
         map_products[p_data["id"]] = new_product
 
-    print("--- 🛒 Importing Orders and Payments... ---")
+    print("--- Importing Orders and Payments... ---")
     for o_data in data["orders"]:
         
         real_client = map_clients.get(o_data["clientId"])
